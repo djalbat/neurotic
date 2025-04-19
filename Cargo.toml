@@ -8,10 +8,11 @@ name = "neurotic"
 
 [lib]
 crate-type = ["cdylib"]
+path = "src/lib.rs"
 
 [[bin]]
-name = "debug"
-path = "src/debug.rs"
+name = "bin"
+path = "src/bin.rs"
 
 [dependencies]
 napi = { version = "2", features = ["napi4"] }
