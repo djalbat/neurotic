@@ -27,12 +27,10 @@
     "watch": "npm run clean && npm run batch && npm run incremental",
     "watch-debug": "npm run clean && npm run batch-debug && npm run incremental-debug",
     "native-clean": "rm -rf ./target neurotic.node",
-    "native-copy": "cp target/release/libneurotic.dylib neurotic.node",
-    "native-copy-debug": "cp target/debug/libneurotic.dylib neurotic.node",
-    "native-cargo-debug": "cargo build",
-    "native-cargo": "cargo build --release",
-    "native-build-debug": "npm run native-clean && npm run native-cargo-debug && npm run native-copy-debug",
-    "native-build": "npm run native-clean && npm run native-cargo && npm run native-copy"
+    "native-napi-debug": "napi build",
+    "native-napi": "napi build --release",
+    "native-build-debug": "npm run native-clean && npm run native-napi-debug",
+    "native-build": "npm run native-clean && npm run native-napi"
   },
   "main": "./lib/index.js"
 }
