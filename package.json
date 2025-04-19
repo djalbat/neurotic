@@ -9,26 +9,15 @@
     "type": "git",
     "url": "https://github.com/djalbat/neurotic"
   },
-  "dependencies": {
-    "occam-parsers": "^23.0.117",
-    "occam-query": "^4.1.75"
-  },
   "devDependencies": {
+    "@napi-rs/cli": "^2.18.4",
     "@swc/core": "^1.5.6",
-    "easy": "^23.0.1",
-    "easy-layout": "^6.0.235",
-    "easy-with-style": "^3.0.474",
-    "esbuild": "^0.9.2",
-    "express": "^4.17.1",
-    "juxtapose": "^4.0.117",
     "lively-cli": "^2.0.65",
-    "watchful-cli": "^1.7.56",
-    "with-style": "^5.0.129"
+    "watchful-cli": "^1.7.56"
   },
   "scripts": {
-    "start": "node ./bin/main.js",
     "clean": "rm -rf ./lib",
-    "watchful": "watchful -m --transpiler=swc --bundler=esbuild --source-directory=./src --lib-directory=./lib --entry-file=example.js --bundle-file=./example.js --wait=100",
+    "watchful": "watchful -m --transpiler=swc --source-directory=./src --lib-directory=./lib --wait=100",
     "batch": "npm run watchful batch --",
     "batch-debug": "npm run watchful batch -- --debug",
     "incremental": "npm run watchful incremental --",
@@ -36,7 +25,14 @@
     "build": "npm run clean && npm run batch",
     "build-debug": "npm run clean && npm run batch-debug",
     "watch": "npm run clean && npm run batch && npm run incremental",
-    "watch-debug": "npm run clean && npm run batch-debug && npm run incremental-debug"
+    "watch-debug": "npm run clean && npm run batch-debug && npm run incremental-debug",
+    "native-clean": "rm -rf ./target neurotic.node",
+    "native-copy": "cp target/release/libneurotic.dylib neurotic.node",
+    "native-copy-debug": "cp target/debug/libneurotic.dylib neurotic.node",
+    "native-cargo-debug": "cargo build",
+    "native-cargo": "cargo build --release",
+    "native-build-debug": "npm run native-clean && npm run native-cargo-debug && npm run native-copy-debug",
+    "native-build": "npm run native-clean && npm run native-cargo && npm run native-copy"
   },
   "main": "./lib/index.js"
 }

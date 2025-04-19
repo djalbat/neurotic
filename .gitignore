@@ -1,2 +1,7 @@
 .idea
+.DS_Store
 node_modules
+target
+package-lock.json
+Cargo.lock
+index.d.ts
