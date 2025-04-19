@@ -1,15 +1,18 @@
 "use strict";
 
-import { Model, Vocabulary } from "./index";  ///
+import { Model, Corpus, Vocabulary } from "./index";  ///
 
 import "./ngl";
 
-const model =
+const corpus = Corpus.fromFile(),
+      model =
 
-  <Model>
-    <Vocabulary/>
-  </Model>
+        <Model>
+          <Vocabulary/>
+        </Model>
 
-;
+      ;
+
+model.train(corpus);
 
 model.serialise();

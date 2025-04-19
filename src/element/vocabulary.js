@@ -17,7 +17,7 @@ export default class Vocabulary extends Element {
     this.filePath = filePath;
   }
 
-  getArray() {
+  getTokens() {
     return this.tokens;
   }
 
