@@ -48,7 +48,7 @@ export default class Vocabulary extends Element {
     return index;
   }
 
-  asJSON() {
+  toJSON() {
     const tokens = this.tokens,
           json = {
             tokens

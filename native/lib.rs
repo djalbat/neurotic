@@ -4,16 +4,16 @@ use napi::bindgen_prelude::*;
 use napi_derive::napi;
 
 #[napi]
-pub fn matrix_multiply(
-    matrix: Float32Array,
+pub fn vector_matrix_multiply(
     vector: Float32Array,
+    matrix: Float32Array,
     rows: u32,
     cols: u32
 ) -> Float32Array {
-    let matrix = matrix.as_ref();
     let vector = vector.as_ref();
+    let matrix = matrix.as_ref();
 
-    let result = core::matrix_multiply(matrix, vector, rows, cols);
+    let result = core::vector_matrix_multiply(vector, matrix, rows, cols);
     
     Float32Array::from(result)
 }

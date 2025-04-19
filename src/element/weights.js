@@ -27,8 +27,8 @@ export default class Weights extends Element {
 
   }
 
-  asJSON() {
-    const matrixJSON = this.matrix.asJSON(),
+  toJSON() {
+    const matrixJSON = this.matrix.toJSON(),
           matrix = matrixJSON,  //
           json = {
             matrix

@@ -61,15 +61,15 @@ export default class Model extends Element {
   }
 
   serialise(filePath = DEFAULT_MODEL_FILE_PATH) {
-    const json = this.asJSON(),
+    const json = this.toJSON(),
           jsonString = JSON.stringify(json),
           content = jsonString; ///
 
     writeFile(filePath, content);
   }
 
-  asJSON() {
-    const vocabularyJSON = this.vocabulary.asJSON(),
+  toJSON() {
+    const vocabularyJSON = this.vocabulary.toJSON(),
           weightsJSON = this.weights.toJSON(),
           vocabulary = vocabularyJSON,  ///
           weights = weightsJSON, ///

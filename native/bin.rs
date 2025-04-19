@@ -9,7 +9,7 @@ fn main() {
     let rows = 2;
     let cols = 3;
 
-    let result = core::matrix_multiply(&matrix, &vector, rows, cols);
+    let result = core::vector_matrix_multiply(&vector, &matrix, rows, cols);
 
     println!("Result: {:?}", result);
 }

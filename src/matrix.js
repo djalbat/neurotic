@@ -1,6 +1,6 @@
 "use strict";
 
-import { matrixMultiply } from "../lib.node";
+import { vectorMatrixMultiply } from "../lib.node";
 
 import { random } from "./utilities/random";
 
@@ -28,7 +28,7 @@ export default class Matrix {
   multiplyVector(vector) {
     const vectorFloat32Array = vector.toFloat32Array(),
           matrixFloat32Array = this.toFloat32Array(),
-          resultFloat32Array = matrixMultiply(matrixFloat32Array, vectorFloat32Array, this.rows, this.columns),
+          resultFloat32Array = vectorMatrixMultiply(vectorFloat32Array, matrixFloat32Array, this.rows, this.columns),
           resultVector = Vector.fromFloat32Array(resultFloat32Array);
 
     return resultVector;
@@ -50,12 +50,6 @@ export default class Matrix {
     }
   }
 
-  toFloat32Array() {
-    const float32Array = new Float32Array(this.elements);
-
-    return float32Array;
-  }
-
   toJSON() {
     const rows = this.rows,
           columns = this.columns,
@@ -67,6 +61,12 @@ export default class Matrix {
           };
 
     return json;
+  }
+
+  toFloat32Array() {
+    const float32Array = new Float32Array(this.elements);
+
+    return float32Array;
   }
 
   static fromJSON(json) {

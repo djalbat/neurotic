@@ -1,4 +1,4 @@
-pub fn matrix_multiply(matrix: &[f32], vector: &[f32], rows: u32, cols: u32) -> Vec<f32> {
+pub fn vector_matrix_multiply(vector: &[f32], matrix: &[f32], rows: u32, cols: u32) -> Vec<f32> {
     assert_eq!(matrix.len(), (rows * cols) as usize, "Matrix size mismatch");
     assert_eq!(vector.len(), cols as usize, "Vector size mismatch");
 

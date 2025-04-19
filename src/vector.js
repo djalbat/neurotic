@@ -16,6 +16,15 @@ export default class Vector {
     return width;
   }
 
+  toJSON() {
+    const elements = this.elements,
+          json = {
+            elements
+          };
+
+    return json;
+  }
+
   toFloat32Array() {
     const float32Array = new Float32Array(this.elements);
 
