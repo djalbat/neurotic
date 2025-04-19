@@ -1,14 +1,14 @@
-import { matrixMultiply } from "../lib.node";
+import { Matrix, Vector } from "./index";
 
-const rows = 3;
-const cols = 4;
-
-const matrix = new Float32Array([
+const rows = 3,
+      columns = 4,
+      matrix = Matrix.fromRowsColumnsAndElements(rows, columns, [
         1,  2,  3,  4,
         5,  6,  7,  8,
         9, 10, 11, 12
       ]),
-      vector = new Float32Array([1, 0, 1, 0]),
-      result = matrixMultiply(matrix, vector, rows, cols);
+      vector = Vector.fromElements([1, 0, 1, 0]),
+      result = matrix.multiplyVector(vector).toFloat32Array();
 
 console.log(result);
+

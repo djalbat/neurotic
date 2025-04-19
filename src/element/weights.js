@@ -21,7 +21,10 @@ export default class Weights extends Element {
   }
 
   train(oneHotVectors) {
-    debugger
+    const [ inputOneHotVector, outputOneHotVector ] = oneHotVectors,
+          logitsVector = this.matrix.multiplyVector(inputOneHotVector);
+
+
   }
 
   asJSON() {

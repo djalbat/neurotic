@@ -5,10 +5,10 @@ import { fileSystemUtilities } from "necessary/lib/main";
 import Element from "../element";
 import Weights from "../element/weights";
 import Vocabulary from "../element/vocabulary";
+import OneHotVector from "../vector/oneHot";
 
 import { DEFAULT_MODEL_FILE_PATH } from "../defaults";
 import { elementFromChildElements } from "../utilities/element";
-import { oneHotVectorsFromChunkSizeAndTokens } from "../utilities/training";
 import { weightsFromJSON, vocabularyFromJSON } from "../utilities/json";
 
 const { writeFile } = fileSystemUtilities;
@@ -31,13 +31,13 @@ export default class Model extends Element {
 
   initialise() {
     if (this.vocabulary === null) {
-      throw Exception("The model has no vocabulary.")
+      throw new Error("The model has no vocabulary.")
     }
 
     this.vocabulary.initialise();
 
     if (this.weights === null) {
-      throw Exception("The model has no weights.")
+      throw new Error("The model has no weights.")
     }
 
     const size = this.vocabulary.getSize();
@@ -49,9 +49,12 @@ export default class Model extends Element {
     const chunks = corpus.getChunks();
 
     chunks.forEach((chunk) => {
-      const size = this.vocabulary.getSize(),
-            tokens = this.vocabulary.getTokens(),
-            oneHotVectors = oneHotVectorsFromChunkSizeAndTokens(chunk, size, tokens);
+      const tokens = chunk, ///
+            oneHotVectors = tokens.map((token) => {
+              const oneHotVector = OneHotVector.fromTokenAndVocabulary(token, this.vocabulary);
+
+              return oneHotVector;
+            });
 
       this.weights.train(oneHotVectors);
     });
@@ -69,7 +72,7 @@ export default class Model extends Element {
     const vocabularyJSON = this.vocabulary.asJSON(),
           weightsJSON = this.weights.toJSON(),
           vocabulary = vocabularyJSON,  ///
-          weights = vocabulary, ///
+          weights = weightsJSON, ///
           json = {
             vocabulary,
             weights

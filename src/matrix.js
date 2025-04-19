@@ -1,32 +1,45 @@
 "use strict";
 
+import { matrixMultiply } from "../lib.node";
+
 import { random } from "./utilities/random";
 
+import Vector from "./vector";
+
 export default class Matrix {
-  constructor(width, height, elements) {
-    this.width = width;
-    this.height = height;
+  constructor(rows, columns, elements) {
+    this.rows = rows;
+    this.columns = columns;
     this.elements = elements;
   }
 
-  getWidth() {
-    return this.width;
+  getRows() {
+    return this.rows;
   }
 
-  getHeight() {
-    return this.height;
+  getColumns() {
+    return this.columns;
   }
 
   getElements() {
     return this.elements;
   }
 
+  multiplyVector(vector) {
+    const vectorFloat32Array = vector.toFloat32Array(),
+          matrixFloat32Array = this.toFloat32Array(),
+          resultFloat32Array = matrixMultiply(matrixFloat32Array, vectorFloat32Array, this.rows, this.columns),
+          resultVector = Vector.fromFloat32Array(resultFloat32Array);
+
+    return resultVector;
+  }
+
   initialise(size) {
-    this.width = size;  ///
-    this.height = size; ///
+    this.rows = size;  ///
+    this.columns = size; ///
     this.elements = [];
 
-    const cardinality = this.width * this.height,
+    const cardinality = this.rows * this.columns,
           lowerBound = -1,
           upperBound = +1;
 
@@ -37,13 +50,19 @@ export default class Matrix {
     }
   }
 
+  toFloat32Array() {
+    const float32Array = new Float32Array(this.elements);
+
+    return float32Array;
+  }
+
   toJSON() {
-    const width = this.width,
-          height = this.height,
+    const rows = this.rows,
+          columns = this.columns,
           elements = this.elements,
           json = {
-            width,
-            height,
+            rows,
+            columns,
             elements
           };
 
@@ -51,17 +70,33 @@ export default class Matrix {
   }
 
   static fromJSON(json) {
-    const { width, height, elements } = json,  //
-          matrix = new Matrix(width, height, elements);
+    const { rows, columns, elements } = json,  //
+          matrix = new Matrix(rows, columns, elements);
 
     return matrix;
   }
 
   static fromNothing() {
-    const width = null,
-          height = null,
+    const rows = null,
+          columns = null,
           elements = null,
-          matrix = new Matrix(width, height, elements);
+          matrix = new Matrix(rows, columns, elements);
+
+    return matrix;
+  }
+
+  static fromRowsColumnsAndElements(Class, rows, columns, elements) {
+    if (elements === undefined) {
+      elements = columns; ///
+
+      columns = rows; ///
+
+      rows = Class; ///
+
+      Class = Matrix; ///
+    }
+
+    const matrix = new Class(rows, columns, elements);
 
     return matrix;
   }

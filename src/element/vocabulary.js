@@ -42,6 +42,12 @@ export default class Vocabulary extends Element {
     this.tokens = content.split(CARRIAGE_RETURN);
   }
 
+  indexOfToken(token) {
+    const index = this.tokens.indexOf(token);
+
+    return index;
+  }
+
   asJSON() {
     const tokens = this.tokens,
           json = {
