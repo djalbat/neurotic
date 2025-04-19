@@ -10,7 +10,6 @@
     "url": "https://github.com/djalbat/neurotic"
   },
   "devDependencies": {
-    "@napi-rs/cli": "^2.18.4",
     "@swc/core": "^1.5.6",
     "lively-cli": "^2.0.65",
     "watchful-cli": "^1.7.56"
@@ -25,12 +24,7 @@
     "build": "npm run clean && npm run batch",
     "build-debug": "npm run clean && npm run batch-debug",
     "watch": "npm run clean && npm run batch && npm run incremental",
-    "watch-debug": "npm run clean && npm run batch-debug && npm run incremental-debug",
-    "native-clean": "rm -rf ./target neurotic.node",
-    "native-napi-debug": "napi build",
-    "native-napi": "napi build --release",
-    "native-build-debug": "npm run native-clean && npm run native-napi-debug",
-    "native-build": "npm run native-clean && npm run native-napi"
+    "watch-debug": "npm run clean && npm run batch-debug && npm run incremental-debug"
   },
   "main": "./lib/index.js"
 }

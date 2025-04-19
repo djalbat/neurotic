@@ -10,7 +10,7 @@ pub fn matrixMultiplication(matrix: Float32Array, vector: Float32Array, rows: u3
     assert_eq!(vector.len(), cols as usize, "Vector size mismatch");
 
     let mut result = Vec::with_capacity(rows as usize);
-
+    
     for row in 0..rows {
         let mut sum = 0.0;
         

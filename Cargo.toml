@@ -3,11 +3,15 @@ name = "neurotic"
 version = "0.1.0"
 edition = "2021"
 
+[package.metadata.napi]
+name = "neurotic"
+
 [lib]
 crate-type = ["cdylib"]
 
-[package.metadata.napi]
-name = "neurotic"
+[[bin]]
+name = "debug"
+path = "src/debug.rs"
 
 [dependencies]
 napi = { version = "2", features = ["napi4"] }
