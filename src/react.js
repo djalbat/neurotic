@@ -1,7 +1,7 @@
 "use strict";
 
 import Element from "./element";
-import FunctionCanvasElement from "./element/model/function";
+import FunctionElement from "./element/function";
 
 import { FUNCTION } from "./constants";
 import { flatten, guarantee } from "./utilities/array";
@@ -30,7 +30,7 @@ function createElement(firstArgument, properties, ...childElements) {
       childElements
     });
 
-    element = FunctionCanvasElement.fromProperties(properties);
+    element = FunctionElement.fromProperties(properties);
   }
 
   return element;
