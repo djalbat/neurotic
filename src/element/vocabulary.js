@@ -25,6 +25,13 @@ export default class Vocabulary extends Element {
     return this.filePath;
   }
 
+  getSize() {
+    const tokensLength = this.tokens.length,
+          size = tokensLength;  ///
+
+    return size;
+  }
+
   initialise() {
     if (this.tokens !== null) {
       return;

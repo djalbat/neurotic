@@ -1,10 +1,8 @@
 "use strict";
 
-export function oneHotVectorsFromChunkAndTokens(chunk, tokens) {
+export function oneHotVectorsFromChunkSizeAndTokens(chunk, size, tokens) {
   const chunkTokens = chunk,  ///
         vocabularyTokens = tokens,  ///
-        vocabularyTokensLength = vocabularyTokens.length,
-        size = vocabularyTokensLength,  ///
         oneHotVectors = chunkTokens.map((chunkToken) => {
           const index = vocabularyTokens.indexOf(chunkToken);
 
