@@ -1,5 +1,8 @@
 "use strict";
 
+import { evaluate, forward } from "../../lib.node";
+
+import Vector from "../vector";
 import Matrix from "../matrix";
 import Element from "../element";
 import WeightsResult from "../result/weights";
@@ -37,22 +40,27 @@ export default class Weights extends Element {
     return weightsResult;
   }
 
-  evaluate(oneHotVectors) {
-    const [ inputOneHotVector, outputOneHotVector ] = oneHotVectors,
-          logitsVector = inputOneHotVector.multiplyByMatrix(this.matrix),
-          logitsVectorSoftmax = logitsVector.softmax(),
-          probabilitiesVector = logitsVectorSoftmax,
+  forward(oneHotVector) {
+    const oneHotVectorFloat32Array = oneHotVector.toFloat32Array(),
+          matrixFloat32Array = this.matrix.toFloat32Array(),
+          rows = this.matrix.getRows(),
+          columns = this.matrix.getColumns(),
+          probabilitiesFloat32Array = forward(oneHotVectorFloat32Array, matrixFloat32Array, rows, columns),
+          probabilitiesVector = Vector.fromFloat32Array(probabilitiesFloat32Array);
+
+    return probabilitiesVector;
+  }
+
+  evaluate(oneHotVector) {
+    const oneHotVectorFloat32Array = oneHotVector.toFloat32Array(),
+          matrixFloat32Array = this.matrix.toFloat32Array(),
+          rows = this.matrix.getRows(),
+          columns = this.matrix.getColumns(),
+          probabilitiesFloat32Array = evaluate(oneHotVectorFloat32Array, matrixFloat32Array, rows, columns),
+          probabilitiesVector = Vector.fromFloat32Array(probabilitiesFloat32Array),
           weightsResult = WeightsResult.fromOutputOneHotVectorAndProbabilitiesVector(outputOneHotVector, probabilitiesVector);
 
     return weightsResult;
-  }
-
-  forward(oneHotVector) {
-    const logitsVector = oneHotVector.multiplyByMatrix(this.matrix),
-          logitsVectorSoftmax = logitsVector.softmax(),
-          probabilitiesVector = logitsVectorSoftmax;  ///
-
-    return probabilitiesVector;
   }
 
   toJSON() {

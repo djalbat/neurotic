@@ -14,7 +14,7 @@ export default class WeightsResult extends Result {
                         1 :
                           0,
           loss = -Math.log(probability),
-          result = new Result(accuracy, loss);
+          result = new WeightsResult(accuracy, loss);
 
     return result;
   }
