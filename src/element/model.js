@@ -10,6 +10,7 @@ import OneHotVector from "../vector/oneHot";
 import { elementFromChildElements } from "../utilities/element";
 import { weightsFromJSON, vocabularyFromJSON } from "../utilities/json";
 import { DEFAULT_LEARNING_RATE, DEFAULT_MODEL_FILE_PATH } from "../defaults";
+import Result from "../result";
 
 const { writeFile } = fileSystemUtilities;
 
@@ -48,16 +49,33 @@ export default class Model extends Element {
   train(corpus, learningRate = DEFAULT_LEARNING_RATE) {
     const chunks = corpus.getChunks();
 
+    let totalLoss = 0,
+        totalAccuracy = 0;
+
     chunks.forEach((chunk) => {
       const tokens = chunk, ///
             oneHotVectors = tokens.map((token) => {
               const oneHotVector = OneHotVector.fromTokenAndVocabulary(token, this.vocabulary);
 
               return oneHotVector;
-            });
+            }),
+            result = this.weights.train(oneHotVectors, learningRate),
+            accuracy = result.getAccuracy(),
+            loss = result.getLoss();
 
-      this.weights.train(oneHotVectors, learningRate);
+      totalLoss += loss;
+
+      totalAccuracy += accuracy;
     });
+
+    const corpusSize = corpus.getSize(),
+          averageLoss = totalLoss / corpusSize,
+          averageAccuracy = totalAccuracy / corpusSize,
+          accuracy = averageAccuracy,
+          loss = averageLoss, ///
+          result = Result.fromAccuracyAndLoss(accuracy, loss);
+
+    return result;
   }
 
   serialise(filePath = DEFAULT_MODEL_FILE_PATH) {

@@ -30,6 +30,29 @@ export default registryAssigned(class Vector {
     return resultVector;
   }
 
+  argmax() {
+    let maximumElement = -Infinity
+
+    const elements = this.getElements(),
+          argmax = elements.reduce((argmax, element, index) => {
+            if (element > maximumElement) {
+              maximumElement = element; ///
+
+              argmax = index; ///
+            }
+
+            return argmax;
+          }, -1);
+
+    return argmax;
+  }
+
+  elementAt(index) {
+    const element = this.elements[index];
+
+    return element;
+  }
+
   scalarMultiply(scalar) {
     const vectorFloat32Array = this.toFloat32Array(),
           resultFloat32Array = vectorScalarMultiply(vectorFloat32Array, scalar),

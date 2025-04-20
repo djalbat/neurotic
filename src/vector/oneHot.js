@@ -5,6 +5,17 @@ import Vector from "../vector";
 import { registryAssigned } from "../registry";
 
 export default registryAssigned(class OneHotVector extends Vector {
+  argmax() {
+    const elements = this.getElements(),
+          argmax = elements.findIndex((element) => {
+            if (element === 1) {
+              return true;
+            }
+          });
+
+    return argmax;
+  }
+
   static fromTokenAndVocabulary(token, vocabulary) {
     const index = vocabulary.indexOfToken(token);
 

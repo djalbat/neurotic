@@ -14,6 +14,8 @@ const corpus = Corpus.fromFile(),
 
       ;
 
-model.train(corpus);
+const result = model.train(corpus);
+
+result.log(console);
 
 model.serialise();

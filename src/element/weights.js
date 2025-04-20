@@ -1,5 +1,6 @@
 "use strict";
 
+import Result from "../result";
 import Matrix from "../matrix";
 import Element from "../element";
 
@@ -29,6 +30,10 @@ export default class Weights extends Element {
           scaledDeltasMatrix = deltasMatrix.scalarMultiply(learningRate);
 
     this.matrix = this.matrix.subtractMatrix(scaledDeltasMatrix);
+
+    const result = Result.fromOutputOneHotVectorAndProbabilitiesVector(outputOneHotVector, probabilitiesVector);
+
+    return result;
   }
 
   toJSON() {

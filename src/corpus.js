@@ -15,6 +15,13 @@ export default class Corpus {
     return this.chunks;
   }
 
+  getSize() {
+    const chunksLength = this.chunks.length,
+          size = chunksLength;  ///
+
+    return size;
+  }
+
   toJSON() {
     const chunks = this.chunks,
           json = {
