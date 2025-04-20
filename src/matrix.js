@@ -1,6 +1,6 @@
 "use strict";
 
-import { matrixScalarMultiply, matrixSubtractMatrix } from "../lib.node";
+import { multiplyMatrixByScalar, subtractMatrixFromMatrix } from "../lib.node";
 
 import { random } from "./utilities/random";
 
@@ -24,11 +24,11 @@ export default class Matrix {
   }
 
   subtractMatrix(matrix) {
-    const matrixA = this, ///
-          matrixB = matrix, ///
+    const matrixA = matrix, ///
+          matrixB = this, ///
           matrixAFloat32Array = matrixA.toFloat32Array(),
           matrixBFloat32Array = matrixB.toFloat32Array(),
-          resultFloat32Array = matrixSubtractMatrix(matrixAFloat32Array, matrixBFloat32Array),
+          resultFloat32Array = subtractMatrixFromMatrix(matrixAFloat32Array, matrixBFloat32Array),
           resultMatrix = Matrix.fromRowsColumnsAndFloat32Array(this.rows, this.columns, resultFloat32Array);
 
     return resultMatrix;
@@ -36,7 +36,7 @@ export default class Matrix {
 
   multiplyByScalar(scalar) {
     const matrixFloat32Array = this.toFloat32Array(),
-          resultFloat32Array = matrixScalarMultiply(matrixFloat32Array, scalar),
+          resultFloat32Array = multiplyMatrixByScalar(matrixFloat32Array, scalar),
           resultMatrix = Matrix.fromRowsColumnsAndFloat32Array(this.rows, this.columns, resultFloat32Array);
 
     return resultMatrix;

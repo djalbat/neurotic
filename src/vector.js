@@ -1,6 +1,6 @@
 "use strict";
 
-import { vectorSoftmax, vectorScalarMultiply, vectorMultiplyMatrix, vectorSubtractVector, vectorOuterMultiplyVector } from "../lib.node";
+import { softmaxVector, multiplyVectorByScalar, multiplyVectorByMatrix, subtractVectorFromVector, outerMultiplyVectorByVector } from "../lib.node";
 
 import Matrix from "./matrix";
 
@@ -22,7 +22,7 @@ export default class Vector {
 
   softmax() {
     const vectorFloat32Array = this.toFloat32Array(),
-          resultFloat32Array = vectorSoftmax(vectorFloat32Array),
+          resultFloat32Array = softmaxVector(vectorFloat32Array),
           resultVector = Vector.fromFloat32Array(resultFloat32Array);
 
     return resultVector;
@@ -52,11 +52,11 @@ export default class Vector {
   }
 
   subtractVector(vector) {
-    const vectorA = this, ///
-          vectorB = vector, ///
+    const vectorA = vector, ///
+          vectorB = this, ///
           vectorAFloat32Array = vectorA.toFloat32Array(),
           vectorBFloat32Array = vectorB.toFloat32Array(),
-          resultFloat32Array = vectorSubtractVector(vectorAFloat32Array, vectorBFloat32Array),
+          resultFloat32Array = subtractVectorFromVector(vectorAFloat32Array, vectorBFloat32Array),
           resultVector = Vector.fromFloat32Array(resultFloat32Array);
 
     return resultVector;
@@ -64,7 +64,7 @@ export default class Vector {
 
   multiplyByScalar(scalar) {
     const vectorFloat32Array = this.toFloat32Array(),
-          resultFloat32Array = vectorScalarMultiply(vectorFloat32Array, scalar),
+          resultFloat32Array = multiplyVectorByScalar(vectorFloat32Array, scalar),
           resultVector = Vector.fromFloat32Array(resultFloat32Array);
 
     return resultVector;
@@ -75,7 +75,7 @@ export default class Vector {
           columns = matrix.getColumns(),
           vectorFloat32Array = this.toFloat32Array(),
           matrixFloat32Array = matrix.toFloat32Array(),
-          resultFloat32Array = vectorMultiplyMatrix(vectorFloat32Array, matrixFloat32Array, rows, columns),
+          resultFloat32Array = multiplyVectorByMatrix(vectorFloat32Array, matrixFloat32Array, rows, columns),
           resultVector = Vector.fromFloat32Array(resultFloat32Array);
 
     return resultVector;
@@ -90,7 +90,7 @@ export default class Vector {
           vectorBWidth = vectorB.getWidth(),
           rows = vectorAWidth,  ///
           columns = vectorBWidth, ///
-          resultFloat32Array = vectorOuterMultiplyVector(vectorAFloat32Array, vectorBFloat32Array),
+          resultFloat32Array = outerMultiplyVectorByVector(vectorAFloat32Array, vectorBFloat32Array),
           resultMatrix = Matrix.fromRowsColumnsAndFloat32Array(rows, columns, resultFloat32Array);
 
     return resultMatrix;
