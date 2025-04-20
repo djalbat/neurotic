@@ -7,9 +7,9 @@ import Weights from "../element/weights";
 import Vocabulary from "../element/vocabulary";
 import OneHotVector from "../vector/oneHot";
 
-import { DEFAULT_MODEL_FILE_PATH } from "../defaults";
 import { elementFromChildElements } from "../utilities/element";
 import { weightsFromJSON, vocabularyFromJSON } from "../utilities/json";
+import { DEFAULT_LEARNING_RATE, DEFAULT_MODEL_FILE_PATH } from "../defaults";
 
 const { writeFile } = fileSystemUtilities;
 
@@ -45,7 +45,7 @@ export default class Model extends Element {
     this.weights.initialise(size);
   }
 
-  train(corpus) {
+  train(corpus, learningRate = DEFAULT_LEARNING_RATE) {
     const chunks = corpus.getChunks();
 
     chunks.forEach((chunk) => {
@@ -56,7 +56,7 @@ export default class Model extends Element {
               return oneHotVector;
             });
 
-      this.weights.train(oneHotVectors);
+      this.weights.train(oneHotVectors, learningRate);
     });
   }
 

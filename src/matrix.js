@@ -1,6 +1,6 @@
 "use strict";
 
-import { vectorMultiplyMatrix } from "../lib.node";
+import { matrixScalarMultiply, vectorMultiplyMatrix } from "../lib.node";
 
 import registry from "./registry";
 
@@ -24,6 +24,14 @@ export default registryAssigned(class Matrix {
 
   getElements() {
     return this.elements;
+  }
+
+  scalarMultiply(scalar) {
+    const matrixFloat32Array = this.toFloat32Array(),
+          resultFloat32Array = matrixScalarMultiply(matrixFloat32Array, scalar),
+          resultMatrix = Matrix.fromRowsColumnsAndFloat32Array(this.rows, this.columns, resultFloat32Array);
+
+    return resultMatrix;
   }
 
   multiplyVector(vector) {

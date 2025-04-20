@@ -1,6 +1,6 @@
 "use strict";
 
-import { vectorSoftmax, vectorSubtractVector, vectorOuterMultiplyVector } from "../lib.node";
+import { vectorSoftmax, vectorScalarMultiply, vectorSubtractVector, vectorOuterMultiplyVector } from "../lib.node";
 
 import registry from "./registry";
 
@@ -25,6 +25,14 @@ export default registryAssigned(class Vector {
   softmax() {
     const vectorFloat32Array = this.toFloat32Array(),
           resultFloat32Array = vectorSoftmax(vectorFloat32Array),
+          resultVector = Vector.fromFloat32Array(resultFloat32Array);
+
+    return resultVector;
+  }
+
+  scalarMultiply(scalar) {
+    const vectorFloat32Array = this.toFloat32Array(),
+          resultFloat32Array = vectorScalarMultiply(vectorFloat32Array, scalar),
           resultVector = Vector.fromFloat32Array(resultFloat32Array);
 
     return resultVector;
