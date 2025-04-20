@@ -3,18 +3,16 @@
 import { fileSystemUtilities } from "necessary/lib/main";
 
 import Element from "../element";
-import Weights from "../element/weights";
-import Vocabulary from "../element/vocabulary";
-import OneHotVector from "../vector/oneHot";
+import registry from "../registry";
 
+import { registryAssigned } from "../registry";
 import { elementFromChildElements } from "../utilities/element";
 import { weightsFromJSON, vocabularyFromJSON } from "../utilities/json";
 import { DEFAULT_LEARNING_RATE, DEFAULT_MODEL_FILE_PATH } from "../defaults";
-import Result from "../result";
 
 const { writeFile } = fileSystemUtilities;
 
-export default class Model extends Element {
+export default registryAssigned(class Model extends Element {
   constructor(vocabulary, weights) {
     super();
 
@@ -47,18 +45,11 @@ export default class Model extends Element {
   }
 
   train(corpus, learningRate = DEFAULT_LEARNING_RATE) {
-    const chunks = corpus.getChunks();
-
     let totalLoss = 0,
         totalAccuracy = 0;
 
-    chunks.forEach((chunk) => {
-      const tokens = chunk, ///
-            oneHotVectors = tokens.map((token) => {
-              const oneHotVector = OneHotVector.fromTokenAndVocabulary(token, this.vocabulary);
-
-              return oneHotVector;
-            }),
+    corpus.forEachChunk((chunk) => {
+      const oneHotVectors = oneHotVectorsFromChunkAnvVocabulary(chunk, this.vocabulary),
             result = this.weights.train(oneHotVectors, learningRate),
             accuracy = result.getAccuracy(),
             loss = result.getLoss();
@@ -68,7 +59,8 @@ export default class Model extends Element {
       totalAccuracy += accuracy;
     });
 
-    const corpusSize = corpus.getSize(),
+    const { Result } = registry,
+          corpusSize = corpus.getSize(),
           averageLoss = totalLoss / corpusSize,
           averageAccuracy = totalAccuracy / corpusSize,
           accuracy = averageAccuracy,
@@ -76,6 +68,39 @@ export default class Model extends Element {
           result = Result.fromAccuracyAndLoss(accuracy, loss);
 
     return result;
+  }
+
+  evaluate(corpus) {
+    let totalLoss = 0,
+        totalAccuracy = 0;
+
+    corpus.forEachChunk((chunk) => {
+      const oneHotVectors = oneHotVectorsFromChunkAnvVocabulary(chunk, this.vocabulary),
+            result = this.weights.evaluate(oneHotVectors),
+            accuracy = result.getAccuracy(),
+            loss = result.getLoss();
+
+      totalLoss += loss;
+
+      totalAccuracy += accuracy;
+    });
+
+    const { Result } = registry,
+          corpusSize = corpus.getSize(),
+          averageLoss = totalLoss / corpusSize,
+          averageAccuracy = totalAccuracy / corpusSize,
+          accuracy = averageAccuracy,
+          loss = averageLoss,
+          result = Result.fromAccuracyAndLoss(accuracy, loss);
+
+    return result;
+  }
+
+  forward(token) {
+    const { OneHotVector } = registry,
+          oneHotVector = OneHotVector.fromTokenAndVocabulary(token, this.vocabulary);
+
+
   }
 
   serialise(filePath = DEFAULT_MODEL_FILE_PATH) {
@@ -108,7 +133,8 @@ export default class Model extends Element {
   }
 
   static fromProperties(properties, ...remainingArguments) {
-    const { childElements } = properties,
+    const { Weights, Vocabulary } = registry,
+          { childElements } = properties,
           vocabulary = elementFromChildElements(childElements, Vocabulary),
           weights = elementFromChildElements(childElements, Weights),
           model = Element.fromProperties(Model, properties, vocabulary, weights, ...remainingArguments);
@@ -117,4 +143,16 @@ export default class Model extends Element {
 
     return model;
   }
+});
+
+function oneHotVectorsFromChunkAnvVocabulary(chunk, vocabulary) {
+  const tokens = chunk, ///
+        oneHotVectors = tokens.map((token) => {
+          const { OneHotVector } = registry,
+                oneHotVector = OneHotVector.fromTokenAndVocabulary(token, vocabulary);
+
+          return oneHotVector;
+        });
+
+  return oneHotVectors;
 }

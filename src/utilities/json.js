@@ -1,8 +1,6 @@
 "use strict";
 
-import Matrix from "../matrix";
-import Weights from "../element/weights";
-import Vocabulary from "../element/vocabulary";
+import registry from "../registry";
 
 export function matrixFromJSON(json) {
   let matrix;
@@ -10,6 +8,8 @@ export function matrixFromJSON(json) {
   ({ matrix } = json);
 
   json = matrix;  ///
+
+  const { Matrix } = registry;
 
   matrix = Matrix.fromJSON(json);
 
@@ -23,6 +23,8 @@ export function weightsFromJSON(json) {
 
   json = weights;  ///
 
+  const { Weights } = registry;
+
   weights = Weights.fromJSON(json);
 
   return weights;
@@ -34,6 +36,8 @@ export function vocabularyFromJSON(json) {
   ({ vocabulary } = json);
 
   json = vocabulary;  ///
+
+  const { Vocabulary } = registry;
 
   vocabulary = Vocabulary.fromJSON(json);
 

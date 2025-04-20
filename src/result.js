@@ -1,6 +1,8 @@
 "use strict";
 
-export default class Result {
+import { registryAssigned } from "./registry";
+
+export default registryAssigned(class Result {
   constructor(accuracy, loss) {
     this.accuracy = accuracy;
     this.loss = loss;
@@ -39,4 +41,4 @@ export default class Result {
 
     return result;
   }
-}
+});

@@ -1,12 +1,12 @@
 "use strict";
 
-import Result from "../result";
-import Matrix from "../matrix";
 import Element from "../element";
+import registry from "../registry";
 
 import { matrixFromJSON } from "../utilities/json";
+import { registryAssigned } from "../registry";
 
-export default class Weights extends Element {
+export default registryAssigned(class Weights extends Element {
   constructor(matrix) {
     super();
 
@@ -24,14 +24,28 @@ export default class Weights extends Element {
   train(oneHotVectors, learningRate) {
     const [ inputOneHotVector, outputOneHotVector ] = oneHotVectors,
           logitsVector = this.matrix.multiplyVector(inputOneHotVector),
-          probabilitiesVector = logitsVector.softmax(),
+          logitsVectorSoftmax = logitsVector.softmax(),
+          probabilitiesVector = logitsVectorSoftmax,  ///
           gradientVector = probabilitiesVector.subtractVector(outputOneHotVector),
           deltasMatrix = inputOneHotVector.outerMultiplyVector(gradientVector),
           scaledDeltasMatrix = deltasMatrix.scalarMultiply(learningRate);
 
     this.matrix = this.matrix.subtractMatrix(scaledDeltasMatrix);
 
-    const result = Result.fromOutputOneHotVectorAndProbabilitiesVector(outputOneHotVector, probabilitiesVector);
+    const { Result } = registry,
+          result = Result.fromOutputOneHotVectorAndProbabilitiesVector(outputOneHotVector, probabilitiesVector);
+
+    return result;
+  }
+
+  evaluate(oneHotVectors) {
+    const [ inputOneHotVector, outputOneHotVector ] = oneHotVectors,
+          logitsVector = this.matrix.multiplyVector(inputOneHotVector),
+          logitsVectorSoftmax = logitsVector.softmax(),
+          probabilitiesVector = logitsVectorSoftmax;  ///
+
+    const { Result } = registry,
+          result = Result.fromOutputOneHotVectorAndProbabilitiesVector(outputOneHotVector, probabilitiesVector);
 
     return result;
   }
@@ -54,9 +68,10 @@ export default class Weights extends Element {
   }
 
   static fromProperties(properties, ...remainingArguments) {
-    const matrix = Matrix.fromNothing(),
+    const { Matrix, Weights } = registry,
+          matrix = Matrix.fromNothing(),
           weights = Element.fromProperties(Weights, properties, matrix, ...remainingArguments);
 
     return weights;
   }
-}
+});

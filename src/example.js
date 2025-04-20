@@ -14,8 +14,16 @@ const corpus = Corpus.fromFile(),
 
       ;
 
-const result = model.train(corpus);
+let result;
+
+result = model.train(corpus);
 
 result.log(console);
+
+result = model.evaluate(corpus);
+
+result.log(console);
+
+model.forward("Fluffy");
 
 model.serialise();

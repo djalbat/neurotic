@@ -2,11 +2,12 @@
 
 import { fileSystemUtilities } from "necessary";
 
+import { registryAssigned } from "./registry";
 import { DEFAULT_CORPUS_FILE_PATH } from "./defaults";
 
 const { readFile } = fileSystemUtilities;
 
-export default class Corpus {
+export default registryAssigned(class Corpus {
   constructor(chunks) {
     this.chunks = chunks;
   }
@@ -21,6 +22,8 @@ export default class Corpus {
 
     return size;
   }
+
+  forEachChunk(callback) { this.chunks.forEach(callback); }
 
   toJSON() {
     const chunks = this.chunks,
@@ -46,4 +49,4 @@ export default class Corpus {
 
     return corpus;
   }
-}
+});
