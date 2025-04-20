@@ -19,9 +19,9 @@ export default class ModelResult extends Result {
     const corpusSize = corpus.getSize(),
           averageLoss = totalLoss / corpusSize,
           averageAccuracy = totalAccuracy / corpusSize,
-          accuracy = averageAccuracy,
           loss = averageLoss, ///
-          modelResult = new ModelResult(accuracy, loss);
+          accuracy = averageAccuracy,
+          modelResult = new ModelResult(loss, accuracy);
 
     return modelResult;
   }

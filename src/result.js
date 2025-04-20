@@ -1,17 +1,17 @@
 "use strict";
 
 export default class Result {
-  constructor(accuracy, loss) {
-    this.accuracy = accuracy;
+  constructor(loss, accuracy) {
     this.loss = loss;
-  }
-
-  getAccuracy() {
-    return this.accuracy;
+    this.accuracy = accuracy;
   }
 
   getLoss() {
     return this.loss;
+  }
+
+  getAccuracy() {
+    return this.accuracy;
   }
 
   log(console) {

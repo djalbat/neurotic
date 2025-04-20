@@ -1,5 +1,6 @@
 "use strict";
 
+export const DEFAULT_BATCH = false;
 export const DEFAULT_EPOCHS = 2;
 export const DEFAULT_SAMPLING = true;
 export const DEFAULT_LOWER_BOUND = 0;

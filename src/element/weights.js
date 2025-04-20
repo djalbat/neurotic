@@ -24,20 +24,19 @@ export default class Weights extends Element {
     this.matrix.initialise(size);
   }
 
-  step(oneHotVectors, learningRate) {
-    const [ inputOneHotVector, outputOneHotVector ] = oneHotVectors,
-          logitsVector = inputOneHotVector.multiplyByMatrix(this.matrix),
+  prepare(inputOneHotVector, outputOneHotVector) {
+    const logitsVector = inputOneHotVector.multiplyByMatrix(this.matrix),
           logitsVectorSoftmax = logitsVector.softmax(),
           probabilitiesVector = logitsVectorSoftmax,  ///
           gradientVector = probabilitiesVector.subtractVector(outputOneHotVector),
-          deltasMatrix = inputOneHotVector.outerMultiplyByVector(gradientVector),
-          scaledDeltasMatrix = deltasMatrix.multiplyByScalar(learningRate);
-
-    this.matrix = this.matrix.subtractMatrix(scaledDeltasMatrix);
-
-    const weightsResult = WeightsResult.fromOutputOneHotVectorAndProbabilitiesVector(outputOneHotVector, probabilitiesVector);
+          deltaMatrix = inputOneHotVector.outerMultiplyByVector(gradientVector),
+          weightsResult = WeightsResult.fromOutputOneHotVectorAndProbabilitiesVectorAndDeltaMatrix(outputOneHotVector, probabilitiesVector, deltaMatrix);
 
     return weightsResult;
+  }
+
+  update(scaledDeltasMatrix) {
+    this.matrix = this.matrix.subtractMatrix(scaledDeltasMatrix);
   }
 
   forward(oneHotVector) {
