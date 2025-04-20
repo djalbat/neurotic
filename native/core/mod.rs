@@ -18,3 +18,19 @@ pub fn vector_matrix_multiply(vector: &[f32], matrix: &[f32], rows: u32, cols: u
 
     result
 }
+
+pub fn vector_softmax(vector: &[f32]) -> Vec<f32> {
+    let max_val = vector
+        .iter()
+        .cloned()
+        .fold(f32::NEG_INFINITY, f32::max);
+
+    let exp_values: Vec<f32> = vector
+        .iter()
+        .map(|&v| (v - max_val).exp())
+        .collect();
+
+    let sum: f32 = exp_values.iter().sum();
+
+    exp_values.iter().map(|&v| v / sum).collect()
+}

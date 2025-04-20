@@ -12,7 +12,7 @@ path = "native/lib.rs"
 
 [[bin]]
 name = "bin"
-path = "native/bin.rs"
+path = "native/tests.rs"
 
 [dependencies]
 napi = { version = "2", features = ["napi4"] }
