@@ -10,7 +10,7 @@ import OneHotVector from "../vector/oneHot";
 
 import { elementFromChildElements } from "../utilities/element";
 import { weightsFromJSON, vocabularyFromJSON } from "../utilities/json";
-import { DEFAULT_EPOCHS, DEFAULT_LEARNING_RATE, DEFAULT_MODEL_FILE_PATH } from "../defaults";
+import { DEFAULT_EPOCHS, DEFAULT_SAMPLING, DEFAULT_LEARNING_RATE, DEFAULT_MODEL_FILE_PATH } from "../defaults";
 
 const { writeFile } = fileSystemUtilities;
 
@@ -82,11 +82,11 @@ export default class Model extends Element {
     return modelResult;
   }
 
-  infer(token, length) {
+  infer(token, length, sampling = DEFAULT_SAMPLING) {
     const tokens = [];
 
     for (let count = 0; count < length; count++) {
-      token = this.forward(token);
+      token = this.forward(token, sampling);
 
       tokens.push(token);
     }
@@ -94,11 +94,10 @@ export default class Model extends Element {
     return tokens;
   }
 
-  forward(token) {
+  forward(token, sampling = DEFAULT_SAMPLING) {
     const oneHotVector = OneHotVector.fromTokenAndVocabulary(token, this.vocabulary),
           probabilitiesVector = this.weights.forward(oneHotVector),
-          probabilitiesVectorArgmax = probabilitiesVector.argmax(),
-          index = probabilitiesVectorArgmax; ///
+          index = probabilitiesVector.predictIndex(sampling);
 
     token = this.vocabulary.tokenAt(index);
 

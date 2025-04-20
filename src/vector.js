@@ -4,6 +4,9 @@ import { softmaxVector, multiplyVectorByScalar, multiplyVectorByMatrix, subtract
 
 import Matrix from "./matrix";
 
+import { random } from "./utilities/random";
+import { DEFAULT_SAMPLING } from "./defaults";
+
 export default class Vector {
   constructor(elements) {
     this.elements = elements;
@@ -45,10 +48,48 @@ export default class Vector {
     return argmax;
   }
 
+  sample() {
+    let index,
+        position = 0;
+
+    const number = random(),
+          length = this.elements.length;
+
+    do {
+      for (index = 0; index < length; index++) {
+        const element = this.elements[index];
+
+        position += element;
+
+        if (number < position) {
+          break;
+        }
+      }
+    } while (index === length);
+
+    return index;
+  }
+
   elementAt(index) {
     const element = this.elements[index];
 
     return element;
+  }
+
+  predictIndex(sampling = DEFAULT_SAMPLING) {
+    let index;
+
+    if (sampling) {
+      const sample = this.sample();
+
+      index = sample; ///
+    } else {
+      const argmax = this.argmax();
+
+      index = argmax;  ///
+    }
+
+    return index;
   }
 
   subtractVector(vector) {

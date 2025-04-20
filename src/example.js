@@ -24,8 +24,9 @@ results.forEach((result) => {
 
 const token = "Fluffy",
       length = 1,
-      tokens = model.infer(token, length);
+      sampling = false,
+      tokens = model.infer(token, length, sampling);
 
 console.log(JSON.stringify(tokens));
 
-// model.serialise();
+model.serialise();
