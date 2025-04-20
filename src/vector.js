@@ -1,8 +1,12 @@
 "use strict";
 
-import { vectorSoftmax } from "../lib.node";
+import { vectorSoftmax, vectorSubtractVector, vectorOuterMultiplyVector } from "../lib.node";
 
-export default class Vector {
+import registry from "./registry";
+
+import { registryAssigned } from "./registry";
+
+export default registryAssigned(class Vector {
   constructor(elements) {
     this.elements = elements;
   }
@@ -24,6 +28,33 @@ export default class Vector {
           resultVector = Vector.fromFloat32Array(resultFloat32Array);
 
     return resultVector;
+  }
+
+  subtractVector(vector) {
+    const vectorA = this, ///
+          vectorB = vector, ///
+          vectorAFloat32Array = vectorA.toFloat32Array(),
+          vectorBFloat32Array = vectorB.toFloat32Array(),
+          resultFloat32Array = vectorSubtractVector(vectorAFloat32Array, vectorBFloat32Array),
+          resultVector = Vector.fromFloat32Array(resultFloat32Array);
+
+    return resultVector;
+  }
+
+  outerMultiplyVector(vector) {
+    const { Matrix } = registry,
+          vectorA = this, ///
+          vectorB = vector, ///
+          vectorAFloat32Array = vectorA.toFloat32Array(),
+          vectorBFloat32Array = vectorB.toFloat32Array(),
+          vectorAWidth = vectorA.getWidth(),
+          vectorBWidth = vectorB.getWidth(),
+          rows = vectorAWidth,  ///
+          columns = vectorBWidth, ///
+          resultFloat32Array = vectorOuterMultiplyVector(vectorAFloat32Array, vectorBFloat32Array),
+          resultMatrix = Matrix.fromRowsColumnsAndFloat32Array(rows, columns, resultFloat32Array);
+
+    return resultMatrix;
   }
 
   toJSON() {
@@ -65,4 +96,4 @@ export default class Vector {
 
     return vector;
   }
-}
+});

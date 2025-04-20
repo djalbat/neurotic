@@ -1,12 +1,13 @@
 "use strict";
 
-import { vectorMatrixMultiply } from "../lib.node";
+import { vectorMultiplyMatrix } from "../lib.node";
+
+import registry from "./registry";
 
 import { random } from "./utilities/random";
+import { registryAssigned } from "./registry";
 
-import Vector from "./vector";
-
-export default class Matrix {
+export default registryAssigned(class Matrix {
   constructor(rows, columns, elements) {
     this.rows = rows;
     this.columns = columns;
@@ -26,9 +27,10 @@ export default class Matrix {
   }
 
   multiplyVector(vector) {
-    const vectorFloat32Array = vector.toFloat32Array(),
+    const { Vector } = registry,
+          vectorFloat32Array = vector.toFloat32Array(),
           matrixFloat32Array = this.toFloat32Array(),
-          resultFloat32Array = vectorMatrixMultiply(vectorFloat32Array, matrixFloat32Array, this.rows, this.columns),
+          resultFloat32Array = vectorMultiplyMatrix(vectorFloat32Array, matrixFloat32Array, this.rows, this.columns),
           resultVector = Vector.fromFloat32Array(resultFloat32Array);
 
     return resultVector;
@@ -100,4 +102,21 @@ export default class Matrix {
 
     return matrix;
   }
-}
+
+  static fromRowsColumnsAndFloat32Array(Class, rows, columns, float32Array) {
+    if (float32Array === undefined) {
+      float32Array = columns; ///
+
+      columns = rows; ///
+
+      rows = Class; ///
+
+      Class = Matrix; ///
+    }
+
+    const elements = Array.from(float32Array),
+          matrix = new Class(rows, columns, elements);
+
+    return matrix;
+  }
+});

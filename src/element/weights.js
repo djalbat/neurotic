@@ -22,8 +22,10 @@ export default class Weights extends Element {
 
   train(oneHotVectors) {
     const [ inputOneHotVector, outputOneHotVector ] = oneHotVectors,
-          logitsVector = this.matrix.multiplyVector(inputOneHotVector).softmax();
-
+          logitsVector = this.matrix.multiplyVector(inputOneHotVector),
+          probabilitiesVector = logitsVector.softmax(),
+          gradientVector = probabilitiesVector.subtractVector(outputOneHotVector),
+          weightDeltasMatrix = inputOneHotVector.outerMultiplyVector(gradientVector);
 
 
   }

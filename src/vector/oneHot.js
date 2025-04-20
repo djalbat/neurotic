@@ -2,7 +2,9 @@
 
 import Vector from "../vector";
 
-export default class OneHotVector extends Vector {
+import { registryAssigned } from "../registry";
+
+export default registryAssigned(class OneHotVector extends Vector {
   static fromTokenAndVocabulary(token, vocabulary) {
     const index = vocabulary.indexOfToken(token);
 
@@ -27,4 +29,4 @@ export default class OneHotVector extends Vector {
   }
 
   static fromElements(elements) { return Vector.fromElements(OneHotVector, elements); }
-}
+});
