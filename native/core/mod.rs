@@ -34,3 +34,40 @@ pub fn vector_softmax(vector: &[f32]) -> Vec<f32> {
 
     exp_values.iter().map(|&v| v / sum).collect()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_vector_matrix_multiply() {
+        let vector = vec![1.0, 0.0, 1.0, 0.0];
+        let matrix = vec![
+            1.0,  2.0,  3.0,  4.0,
+            5.0,  6.0,  7.0,  8.0,
+            9.0, 10.0, 11.0, 12.0,
+        ];
+        let rows = 3;
+        let cols = 4;
+
+        let result = vector_matrix_multiply(&vector, &matrix, rows, cols);
+
+        assert_eq!(result, vec![
+            1.0 + 3.0,
+            5.0 + 7.0,
+            9.0 + 11.0
+        ]);
+    }
+
+    #[test]
+    fn test_softmax_output_sum() {
+        let vector = vec![2.0, 1.0, 0.1];
+
+        let result = vector_softmax(&vector);
+        
+        let sum: f32 = result.iter().sum();
+        let margin_of_error: f32 = 1e-6;
+
+        assert!((sum - 1.0).abs() < margin_of_error);
+    }
+}

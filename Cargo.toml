@@ -10,10 +10,6 @@ name = "neurotic"
 crate-type = ["cdylib"]
 path = "native/lib.rs"
 
-[[bin]]
-name = "bin"
-path = "native/tests.rs"
-
 [dependencies]
 napi = { version = "2", features = ["napi4"] }
 napi-derive = "2"
