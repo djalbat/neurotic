@@ -6,6 +6,18 @@ pub fn matrix_scalar_multiply(matrix: &[f32], scalar: f32) -> Vec<f32> {
     result
 }
 
+pub fn matrix_subtract_matrix(matrix_a: &[f32], matrix_b: &[f32]) -> Vec<f32> {
+    assert_eq!(matrix_a.len(), matrix_b.len(), "Matrices must be the same length");
+
+    let result: Vec<f32> = matrix_a
+        .iter()
+        .zip(matrix_b.iter())
+        .map(|(element_a, element_b)| element_a - element_b)
+        .collect();
+
+    result
+}
+
 pub fn vector_multiply_matrix(vector: &[f32], matrix: &[f32], rows: u32, columns: u32) -> Vec<f32> {
     assert_eq!(matrix.len(), (rows * columns) as usize, "Matrix size mismatch");
     assert_eq!(vector.len(), columns as usize, "Vector size mismatch");
@@ -46,6 +58,19 @@ mod tests {
 
         let result = vector_multiply_matrix(&vector, &matrix, rows, columns);
         let expected = vec![4.0, 12.0, 20.0];
+
+        for (result_element, expected_element) in result.iter().zip(expected.iter()) {
+            assert!((result_element - expected_element).abs() < MARGIN_OF_ERROR);
+        }
+    }
+
+    #[test]
+    fn test_matrix_subtract_matrix() {
+        let matrix_a = vec![0.8, 0.1, 0.1];
+        let matrix_b = vec![0.0, 1.0, 0.0];
+
+        let result = matrix_subtract_matrix(&matrix_a, &matrix_b);
+        let expected = vec![0.8, -0.9, 0.1];
 
         for (result_element, expected_element) in result.iter().zip(expected.iter()) {
             assert!((result_element - expected_element).abs() < MARGIN_OF_ERROR);

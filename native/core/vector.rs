@@ -6,11 +6,11 @@ pub fn vector_softmax(vector: &[f32]) -> Vec<f32> {
 
     let exponential_values: Vec<f32> = vector
         .iter()
-        .map(|&v| (v - maximum_value).exp())
+        .map(|&element| (element - maximum_value).exp())
         .collect();
 
     let sum: f32 = exponential_values.iter().sum();
-    let result = exponential_values.iter().map(|&v| v / sum).collect();
+    let result = exponential_values.iter().map(|&element| element / sum).collect();
     
     result
 }
@@ -29,7 +29,7 @@ pub fn vector_subtract_vector(vector_a: &[f32], vector_b: &[f32]) -> Vec<f32> {
     let result: Vec<f32> = vector_a
         .iter()
         .zip(vector_b.iter())
-        .map(|(a, b)| a - b)
+        .map(|(element_a, element_b)| element_a - element_b)
         .collect();
 
     result

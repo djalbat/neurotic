@@ -61,3 +61,13 @@ pub fn matrix_scalar_multiply(matrix: Float32Array, scalar: f64) -> Float32Array
 
     Float32Array::from(result)
 }
+
+#[napi]
+pub fn matrix_subtract_matrix(matrix_a: Float32Array, matrix_b: Float32Array) -> Float32Array {
+    let matrix_a = matrix_a.as_ref();
+    let matrix_b = matrix_b.as_ref();
+
+    let result = core::matrix::matrix_subtract_matrix(matrix_a, matrix_b);
+
+    Float32Array::from(result)
+}

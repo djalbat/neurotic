@@ -28,7 +28,7 @@ export default class Weights extends Element {
           deltasMatrix = inputOneHotVector.outerMultiplyVector(gradientVector),
           scaledDeltasMatrix = deltasMatrix.scalarMultiply(learningRate);
 
-
+    this.matrix = this.matrix.subtractMatrix(scaledDeltasMatrix);
   }
 
   toJSON() {
