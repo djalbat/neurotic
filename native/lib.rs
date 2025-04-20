@@ -17,3 +17,14 @@ pub fn vector_matrix_multiply(
     
     Float32Array::from(result)
 }
+
+#[napi]
+pub fn vector_softmax(
+    vector: Float32Array
+) -> Float32Array {
+    let vector = vector.as_ref();
+
+    let result = core::vector_softmax(vector);
+
+    Float32Array::from(result)
+}

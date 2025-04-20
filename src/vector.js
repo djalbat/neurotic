@@ -1,5 +1,7 @@
 "use strict";
 
+import { vectorSoftmax } from "../lib.node";
+
 export default class Vector {
   constructor(elements) {
     this.elements = elements;
@@ -14,6 +16,14 @@ export default class Vector {
           width = elementsLength; ///
 
     return width;
+  }
+
+  softmax() {
+    const vectorFloat32Array = this.toFloat32Array(),
+          resultFloat32Array = vectorSoftmax(vectorFloat32Array),
+          resultVector = Vector.fromFloat32Array(resultFloat32Array);
+
+    return resultVector;
   }
 
   toJSON() {
