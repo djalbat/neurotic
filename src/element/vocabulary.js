@@ -5,12 +5,11 @@ import { fileSystemUtilities } from "necessary/lib/main";
 import Element from "../element";
 
 import { CARRIAGE_RETURN } from "../constants";
-import { registryAssigned } from "../registry";
 import { DEFAULT_VOCABULARY_TOKENS, DEFAULT_VOCABULARY_FILE_PATH } from "../defaults";
 
 const { readFile } = fileSystemUtilities;
 
-export default registryAssigned(class Vocabulary extends Element {
+export default class Vocabulary extends Element {
   constructor(tokens, filePath) {
     super();
 
@@ -77,4 +76,4 @@ export default registryAssigned(class Vocabulary extends Element {
 
     return vocabulary;
   }
-});
+}

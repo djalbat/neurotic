@@ -1,12 +1,10 @@
 "use strict";
 
-import { vectorSoftmax, vectorScalarMultiply, vectorSubtractVector, vectorOuterMultiplyVector } from "../lib.node";
+import { vectorSoftmax, vectorScalarMultiply, vectorMultiplyMatrix, vectorSubtractVector, vectorOuterMultiplyVector } from "../lib.node";
 
-import registry from "./registry";
+import Matrix from "./matrix";
 
-import { registryAssigned } from "./registry";
-
-export default registryAssigned(class Vector {
+export default class Vector {
   constructor(elements) {
     this.elements = elements;
   }
@@ -53,14 +51,6 @@ export default registryAssigned(class Vector {
     return element;
   }
 
-  scalarMultiply(scalar) {
-    const vectorFloat32Array = this.toFloat32Array(),
-          resultFloat32Array = vectorScalarMultiply(vectorFloat32Array, scalar),
-          resultVector = Vector.fromFloat32Array(resultFloat32Array);
-
-    return resultVector;
-  }
-
   subtractVector(vector) {
     const vectorA = this, ///
           vectorB = vector, ///
@@ -72,9 +62,27 @@ export default registryAssigned(class Vector {
     return resultVector;
   }
 
-  outerMultiplyVector(vector) {
-    const { Matrix } = registry,
-          vectorA = this, ///
+  multiplyByScalar(scalar) {
+    const vectorFloat32Array = this.toFloat32Array(),
+          resultFloat32Array = vectorScalarMultiply(vectorFloat32Array, scalar),
+          resultVector = Vector.fromFloat32Array(resultFloat32Array);
+
+    return resultVector;
+  }
+
+  multiplyByMatrix(matrix) {
+    const rows = matrix.getRows(),
+          columns = matrix.getColumns(),
+          vectorFloat32Array = this.toFloat32Array(),
+          matrixFloat32Array = matrix.toFloat32Array(),
+          resultFloat32Array = vectorMultiplyMatrix(vectorFloat32Array, matrixFloat32Array, rows, columns),
+          resultVector = Vector.fromFloat32Array(resultFloat32Array);
+
+    return resultVector;
+  }
+
+  outerMultiplyByVector(vector) {
+    const vectorA = this, ///
           vectorB = vector, ///
           vectorAFloat32Array = vectorA.toFloat32Array(),
           vectorBFloat32Array = vectorB.toFloat32Array(),
@@ -127,4 +135,4 @@ export default registryAssigned(class Vector {
 
     return vector;
   }
-});
+}

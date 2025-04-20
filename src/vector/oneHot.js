@@ -2,9 +2,7 @@
 
 import Vector from "../vector";
 
-import { registryAssigned } from "../registry";
-
-export default registryAssigned(class OneHotVector extends Vector {
+export default class OneHotVector extends Vector {
   argmax() {
     const elements = this.getElements(),
           argmax = elements.findIndex((element) => {
@@ -40,4 +38,4 @@ export default registryAssigned(class OneHotVector extends Vector {
   }
 
   static fromElements(elements) { return Vector.fromElements(OneHotVector, elements); }
-});
+}

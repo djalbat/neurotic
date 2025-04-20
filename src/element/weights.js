@@ -1,12 +1,12 @@
 "use strict";
 
+import Matrix from "../matrix";
 import Element from "../element";
-import registry from "../registry";
+import WeightsResult from "../result/weights";
 
 import { matrixFromJSON } from "../utilities/json";
-import { registryAssigned } from "../registry";
 
-export default registryAssigned(class Weights extends Element {
+export default class Weights extends Element {
   constructor(matrix) {
     super();
 
@@ -23,28 +23,25 @@ export default registryAssigned(class Weights extends Element {
 
   step(oneHotVectors, learningRate) {
     const [ inputOneHotVector, outputOneHotVector ] = oneHotVectors,
-          logitsVector = this.matrix.multiplyVector(inputOneHotVector),
+          logitsVector = inputOneHotVector.multiplyByMatrix(this.matrix),
           logitsVectorSoftmax = logitsVector.softmax(),
           probabilitiesVector = logitsVectorSoftmax,  ///
           gradientVector = probabilitiesVector.subtractVector(outputOneHotVector),
-          deltasMatrix = inputOneHotVector.outerMultiplyVector(gradientVector),
-          scaledDeltasMatrix = deltasMatrix.scalarMultiply(learningRate);
+          deltasMatrix = inputOneHotVector.outerMultiplyByVector(gradientVector),
+          scaledDeltasMatrix = deltasMatrix.multiplyByScalar(learningRate);
 
     this.matrix = this.matrix.subtractMatrix(scaledDeltasMatrix);
 
-    const { WeightsResult } = registry,
-          weightsResult = WeightsResult.fromOutputOneHotVectorAndProbabilitiesVector(outputOneHotVector, probabilitiesVector);
+    const weightsResult = WeightsResult.fromOutputOneHotVectorAndProbabilitiesVector(outputOneHotVector, probabilitiesVector);
 
     return weightsResult;
   }
 
   evaluate(oneHotVectors) {
     const [ inputOneHotVector, outputOneHotVector ] = oneHotVectors,
-          logitsVector = this.matrix.multiplyVector(inputOneHotVector),
+          logitsVector = inputOneHotVector.multiplyByMatrix(this.matrix),
           logitsVectorSoftmax = logitsVector.softmax(),
-          probabilitiesVector = logitsVectorSoftmax;  ///
-
-    const { WeightsResult } = registry,
+          probabilitiesVector = logitsVectorSoftmax,
           weightsResult = WeightsResult.fromOutputOneHotVectorAndProbabilitiesVector(outputOneHotVector, probabilitiesVector);
 
     return weightsResult;
@@ -52,7 +49,7 @@ export default registryAssigned(class Weights extends Element {
 
   forward(oneHotVector) {
     const inputOneHotVector = oneHotVector, ///
-          logitsVector = this.matrix.multiplyVector(inputOneHotVector),
+          logitsVector = inputOneHotVector.multiplyByMatrix(this.matrix),
           logitsVectorSoftmax = logitsVector.softmax(),
           probabilitiesVector = logitsVectorSoftmax;  ///
 
@@ -77,10 +74,9 @@ export default registryAssigned(class Weights extends Element {
   }
 
   static fromProperties(properties, ...remainingArguments) {
-    const { Matrix, Weights } = registry,
-          matrix = Matrix.fromNothing(),
+    const matrix = Matrix.fromNothing(),
           weights = Element.fromProperties(Weights, properties, matrix, ...remainingArguments);
 
     return weights;
   }
-});
+}

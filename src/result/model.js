@@ -2,9 +2,7 @@
 
 import Result from "../result";
 
-import { registryAssigned } from "../registry";
-
-export default registryAssigned(class ModelResult extends Result {
+export default class ModelResult extends Result {
   static fromCorpusAndWeightsResults(corpus, weightsResults) {
     let totalLoss = 0,
         totalAccuracy = 0;
@@ -27,4 +25,4 @@ export default registryAssigned(class ModelResult extends Result {
 
     return modelResult;
   }
-});
+}

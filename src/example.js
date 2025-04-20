@@ -14,7 +14,9 @@ const corpus = Corpus.fromFile(),
 
       ;
 
-const results = model.train(corpus);
+const epochs = 10,
+      learningRate = 0.25,
+      results = model.train(corpus, epochs, learningRate);
 
 results.forEach((result) => {
   result.log(console);

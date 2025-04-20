@@ -1,13 +1,10 @@
 "use strict";
 
-import { matrixScalarMultiply, matrixSubtractMatrix, vectorMultiplyMatrix } from "../lib.node";
-
-import registry from "./registry";
+import { matrixScalarMultiply, matrixSubtractMatrix } from "../lib.node";
 
 import { random } from "./utilities/random";
-import { registryAssigned } from "./registry";
 
-export default registryAssigned(class Matrix {
+export default class Matrix {
   constructor(rows, columns, elements) {
     this.rows = rows;
     this.columns = columns;
@@ -26,14 +23,6 @@ export default registryAssigned(class Matrix {
     return this.elements;
   }
 
-  scalarMultiply(scalar) {
-    const matrixFloat32Array = this.toFloat32Array(),
-          resultFloat32Array = matrixScalarMultiply(matrixFloat32Array, scalar),
-          resultMatrix = Matrix.fromRowsColumnsAndFloat32Array(this.rows, this.columns, resultFloat32Array);
-
-    return resultMatrix;
-  }
-
   subtractMatrix(matrix) {
     const matrixA = this, ///
           matrixB = matrix, ///
@@ -45,14 +34,12 @@ export default registryAssigned(class Matrix {
     return resultMatrix;
   }
 
-  multiplyVector(vector) {
-    const { Vector } = registry,
-          vectorFloat32Array = vector.toFloat32Array(),
-          matrixFloat32Array = this.toFloat32Array(),
-          resultFloat32Array = vectorMultiplyMatrix(vectorFloat32Array, matrixFloat32Array, this.rows, this.columns),
-          resultVector = Vector.fromFloat32Array(resultFloat32Array);
+  multiplyByScalar(scalar) {
+    const matrixFloat32Array = this.toFloat32Array(),
+          resultFloat32Array = matrixScalarMultiply(matrixFloat32Array, scalar),
+          resultMatrix = Matrix.fromRowsColumnsAndFloat32Array(this.rows, this.columns, resultFloat32Array);
 
-    return resultVector;
+    return resultMatrix;
   }
 
   initialise(size) {
@@ -138,4 +125,4 @@ export default registryAssigned(class Matrix {
 
     return matrix;
   }
-});
+}

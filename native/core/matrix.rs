@@ -20,17 +20,17 @@ pub fn matrix_subtract_matrix(matrix_a: &[f32], matrix_b: &[f32]) -> Vec<f32> {
 
 pub fn vector_multiply_matrix(vector: &[f32], matrix: &[f32], rows: u32, columns: u32) -> Vec<f32> {
     assert_eq!(matrix.len(), (rows * columns) as usize, "Matrix size mismatch");
-    assert_eq!(vector.len(), columns as usize, "Vector size mismatch");
+    assert_eq!(vector.len(), rows as usize, "Vector size mismatch");
 
     let mut result = Vec::with_capacity(rows as usize);
 
-    for row in 0..rows {
+    for column in 0..columns {
         let mut sum = 0.0;
 
-        for column in 0..columns {
+        for row in 0..rows {
             let index = (row * columns + column) as usize;
 
-            sum += matrix[index] * vector[column as usize];
+            sum += matrix[index] * vector[row as usize];
         }
 
         result.push(sum);
@@ -49,12 +49,13 @@ mod tests {
     fn test_vector_multiply_matrix() {
         let vector = vec![1.0, 0.0, 1.0, 0.0];
         let matrix = vec![
-            1.0,  2.0,  3.0,  4.0,
-            5.0,  6.0,  7.0,  8.0,
-            9.0, 10.0, 11.0, 12.0,
+            1.0, 5.0,  9.0,
+            2.0, 6.0, 10.0,
+            3.0, 7.0, 11.0,
+            4.0, 8.0, 12.0,
         ];
-        let rows = 3;
-        let columns = 4;
+        let rows = 4;
+        let columns = 3;
 
         let result = vector_multiply_matrix(&vector, &matrix, rows, columns);
         let expected = vec![4.0, 12.0, 20.0];

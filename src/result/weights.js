@@ -2,9 +2,7 @@
 
 import Result from "../result";
 
-import { registryAssigned } from "../registry";
-
-export default registryAssigned(class WeightsResult extends Result {
+export default class WeightsResult extends Result {
   static fromOutputOneHotVectorAndProbabilitiesVector(outputOneHotVector, probabilitiesVector) {
     const probabilitiesVectorArgmax = probabilitiesVector.argmax(),
           outputOneHotVectorArgmax = outputOneHotVector.argmax(),
@@ -20,4 +18,5 @@ export default registryAssigned(class WeightsResult extends Result {
 
     return result;
   }
-});
+}
+

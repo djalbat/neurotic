@@ -2,17 +2,19 @@
 
 import { fileSystemUtilities } from "necessary/lib/main";
 
+import Weights from "./weights";
 import Element from "../element";
-import registry from "../registry";
+import Vocabulary from "./vocabulary";
+import ModelResult from "../result/model";
+import OneHotVector from "../vector/oneHot";
 
-import { registryAssigned } from "../registry";
 import { elementFromChildElements } from "../utilities/element";
 import { weightsFromJSON, vocabularyFromJSON } from "../utilities/json";
 import { DEFAULT_EPOCHS, DEFAULT_LEARNING_RATE, DEFAULT_MODEL_FILE_PATH } from "../defaults";
 
 const { writeFile } = fileSystemUtilities;
 
-export default registryAssigned(class Model extends Element {
+export default class Model extends Element {
   constructor(vocabulary, weights) {
     super();
 
@@ -45,8 +47,7 @@ export default registryAssigned(class Model extends Element {
   }
 
   step(corpus, learningRate = DEFAULT_LEARNING_RATE) {
-    const { ModelResult } = registry,
-          weightsResults = corpus.mapChunk((chunk) => {
+    const weightsResults = corpus.mapChunk((chunk) => {
             const oneHotVectors = oneHotVectorsFromChunkAnvVocabulary(chunk, this.vocabulary),
                   weightsResult = this.weights.step(oneHotVectors, learningRate);
 
@@ -70,8 +71,7 @@ export default registryAssigned(class Model extends Element {
   }
 
   evaluate(corpus) {
-    const { ModelResult } = registry,
-          weightsResults = corpus.mapChunk((chunk) => {
+    const weightsResults = corpus.mapChunk((chunk) => {
             const oneHotVectors = oneHotVectorsFromChunkAnvVocabulary(chunk, this.vocabulary),
                   weightsResult = this.weights.evaluate(oneHotVectors);
 
@@ -95,11 +95,10 @@ export default registryAssigned(class Model extends Element {
   }
 
   forward(token) {
-    const { OneHotVector } = registry,
-        oneHotVector = OneHotVector.fromTokenAndVocabulary(token, this.vocabulary),
-        probabilitiesVector = this.weights.forward(oneHotVector),
-        probabilitiesVectorArgmax = probabilitiesVector.argmax(),
-        index = probabilitiesVectorArgmax; ///
+    const oneHotVector = OneHotVector.fromTokenAndVocabulary(token, this.vocabulary),
+          probabilitiesVector = this.weights.forward(oneHotVector),
+          probabilitiesVectorArgmax = probabilitiesVector.argmax(),
+          index = probabilitiesVectorArgmax; ///
 
     token = this.vocabulary.tokenAt(index);
 
@@ -136,8 +135,7 @@ export default registryAssigned(class Model extends Element {
   }
 
   static fromProperties(properties, ...remainingArguments) {
-    const { Weights, Vocabulary } = registry,
-          { childElements } = properties,
+    const { childElements } = properties,
           vocabulary = elementFromChildElements(childElements, Vocabulary),
           weights = elementFromChildElements(childElements, Weights),
           model = Element.fromProperties(Model, properties, vocabulary, weights, ...remainingArguments);
@@ -146,13 +144,12 @@ export default registryAssigned(class Model extends Element {
 
     return model;
   }
-});
+}
 
 function oneHotVectorsFromChunkAnvVocabulary(chunk, vocabulary) {
   const tokens = chunk, ///
         oneHotVectors = tokens.map((token) => {
-          const { OneHotVector } = registry,
-                oneHotVector = OneHotVector.fromTokenAndVocabulary(token, vocabulary);
+          const oneHotVector = OneHotVector.fromTokenAndVocabulary(token, vocabulary);
 
           return oneHotVector;
         });

@@ -2,12 +2,11 @@
 
 import { fileSystemUtilities } from "necessary";
 
-import { registryAssigned } from "./registry";
 import { DEFAULT_CORPUS_FILE_PATH } from "./defaults";
 
 const { readFile } = fileSystemUtilities;
 
-export default registryAssigned(class Corpus {
+export default class Corpus {
   constructor(chunks) {
     this.chunks = chunks;
   }
@@ -51,4 +50,4 @@ export default registryAssigned(class Corpus {
 
     return corpus;
   }
-});
+}
