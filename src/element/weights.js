@@ -48,8 +48,7 @@ export default class Weights extends Element {
   }
 
   forward(oneHotVector) {
-    const inputOneHotVector = oneHotVector, ///
-          logitsVector = inputOneHotVector.multiplyByMatrix(this.matrix),
+    const logitsVector = oneHotVector.multiplyByMatrix(this.matrix),
           logitsVectorSoftmax = logitsVector.softmax(),
           probabilitiesVector = logitsVectorSoftmax;  ///
 
