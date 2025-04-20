@@ -50,6 +50,15 @@ export default registryAssigned(class Weights extends Element {
     return result;
   }
 
+  forward(oneHotVector) {
+    const inputOneHotVector = oneHotVector, ///
+          logitsVector = this.matrix.multiplyVector(inputOneHotVector),
+          logitsVectorSoftmax = logitsVector.softmax(),
+          probabilitiesVector = logitsVectorSoftmax;  ///
+
+    return probabilitiesVector;
+  }
+
   toJSON() {
     const matrixJSON = this.matrix.toJSON(),
           matrix = matrixJSON,  //

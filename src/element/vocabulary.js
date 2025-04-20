@@ -33,6 +33,12 @@ export default registryAssigned(class Vocabulary extends Element {
     return size;
   }
 
+  tokenAt(index) {
+    const token = this.tokens[index] || null;
+
+    return token;
+  }
+
   initialise() {
     if (this.tokens !== null) {
       return;

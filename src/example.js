@@ -20,10 +20,14 @@ result = model.train(corpus);
 
 result.log(console);
 
-result = model.evaluate(corpus);
+// result = model.evaluate(corpus);
+//
+// result.log(console);
 
-result.log(console);
+const token = "Fluffy",
+      length = 1,
+      tokens = model.infer(token, length);
 
-model.forward("Fluffy");
+console.log(JSON.stringify(tokens));
 
-model.serialise();
+// model.serialise();

@@ -98,9 +98,26 @@ export default registryAssigned(class Model extends Element {
 
   forward(token) {
     const { OneHotVector } = registry,
-          oneHotVector = OneHotVector.fromTokenAndVocabulary(token, this.vocabulary);
+          oneHotVector = OneHotVector.fromTokenAndVocabulary(token, this.vocabulary),
+          probabilitiesVector = this.weights.forward(oneHotVector),
+          probabilitiesVectorArgmax = probabilitiesVector.argmax(),
+          index = probabilitiesVectorArgmax; ///
 
+    token = this.vocabulary.tokenAt(index);
 
+    return token;
+  }
+
+  infer(token, length) {
+    const tokens = [];
+
+    for (let count = 0; count < length; count++) {
+      token = this.forward(token);
+
+      tokens.push(token);
+    }
+
+    return tokens;
   }
 
   serialise(filePath = DEFAULT_MODEL_FILE_PATH) {
