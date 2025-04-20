@@ -14,15 +14,11 @@ const corpus = Corpus.fromFile(),
 
       ;
 
-let result;
+const results = model.train(corpus);
 
-result = model.train(corpus);
-
-result.log(console);
-
-// result = model.evaluate(corpus);
-//
-// result.log(console);
+results.forEach((result) => {
+  result.log(console);
+});
 
 const token = "Fluffy",
       length = 1,

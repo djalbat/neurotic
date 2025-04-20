@@ -4,10 +4,11 @@ import Model from "./element/model";
 import Matrix from "./matrix";
 import Vector from "./vector";
 import Corpus from "./corpus";
-import Result from "./result";
 import Weights from "./element/weights";
 import Vocabulary from "./element/vocabulary";
+import ModelResult from "./result/model";
 import OneHotVector from "./vector/oneHot";
+import WeightsResult from "./result/weights";
 
 export { default as React } from "./react";
 export { default as Model } from "./element/model";

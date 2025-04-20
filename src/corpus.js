@@ -23,6 +23,8 @@ export default registryAssigned(class Corpus {
     return size;
   }
 
+  mapChunk(callback) { return this.chunks.map(callback); }
+
   forEachChunk(callback) { this.chunks.forEach(callback); }
 
   toJSON() {

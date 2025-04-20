@@ -8,7 +8,7 @@ import registry from "../registry";
 import { registryAssigned } from "../registry";
 import { elementFromChildElements } from "../utilities/element";
 import { weightsFromJSON, vocabularyFromJSON } from "../utilities/json";
-import { DEFAULT_LEARNING_RATE, DEFAULT_MODEL_FILE_PATH } from "../defaults";
+import { DEFAULT_EPOCHS, DEFAULT_LEARNING_RATE, DEFAULT_MODEL_FILE_PATH } from "../defaults";
 
 const { writeFile } = fileSystemUtilities;
 
@@ -44,68 +44,42 @@ export default registryAssigned(class Model extends Element {
     this.weights.initialise(size);
   }
 
-  train(corpus, learningRate = DEFAULT_LEARNING_RATE) {
-    let totalLoss = 0,
-        totalAccuracy = 0;
+  step(corpus, learningRate = DEFAULT_LEARNING_RATE) {
+    const { ModelResult } = registry,
+          weightsResults = corpus.mapChunk((chunk) => {
+            const oneHotVectors = oneHotVectorsFromChunkAnvVocabulary(chunk, this.vocabulary),
+                  weightsResult = this.weights.step(oneHotVectors, learningRate);
 
-    corpus.forEachChunk((chunk) => {
-      const oneHotVectors = oneHotVectorsFromChunkAnvVocabulary(chunk, this.vocabulary),
-            result = this.weights.train(oneHotVectors, learningRate),
-            accuracy = result.getAccuracy(),
-            loss = result.getLoss();
+            return weightsResult;
+          }),
+          modelResult = ModelResult.fromCorpusAndWeightsResults(corpus, weightsResults);
 
-      totalLoss += loss;
+    return modelResult;
+  }
 
-      totalAccuracy += accuracy;
-    });
+  train(corpus, epochs = DEFAULT_EPOCHS, learningRate = DEFAULT_LEARNING_RATE) {
+    const results = []
 
-    const { Result } = registry,
-          corpusSize = corpus.getSize(),
-          averageLoss = totalLoss / corpusSize,
-          averageAccuracy = totalAccuracy / corpusSize,
-          accuracy = averageAccuracy,
-          loss = averageLoss, ///
-          result = Result.fromAccuracyAndLoss(accuracy, loss);
+    for (let count = 0; count < epochs; count++) {
+      const result = this.step(corpus, learningRate);
 
-    return result;
+      results.push(result);
+    }
+
+    return results;
   }
 
   evaluate(corpus) {
-    let totalLoss = 0,
-        totalAccuracy = 0;
+    const { ModelResult } = registry,
+          weightsResults = corpus.mapChunk((chunk) => {
+            const oneHotVectors = oneHotVectorsFromChunkAnvVocabulary(chunk, this.vocabulary),
+                  weightsResult = this.weights.evaluate(oneHotVectors);
 
-    corpus.forEachChunk((chunk) => {
-      const oneHotVectors = oneHotVectorsFromChunkAnvVocabulary(chunk, this.vocabulary),
-            result = this.weights.evaluate(oneHotVectors),
-            accuracy = result.getAccuracy(),
-            loss = result.getLoss();
+            return weightsResult;
+          }),
+          modelResult = ModelResult.fromCorpusAndWeightsResults(corpus, weightsResults);
 
-      totalLoss += loss;
-
-      totalAccuracy += accuracy;
-    });
-
-    const { Result } = registry,
-          corpusSize = corpus.getSize(),
-          averageLoss = totalLoss / corpusSize,
-          averageAccuracy = totalAccuracy / corpusSize,
-          accuracy = averageAccuracy,
-          loss = averageLoss,
-          result = Result.fromAccuracyAndLoss(accuracy, loss);
-
-    return result;
-  }
-
-  forward(token) {
-    const { OneHotVector } = registry,
-          oneHotVector = OneHotVector.fromTokenAndVocabulary(token, this.vocabulary),
-          probabilitiesVector = this.weights.forward(oneHotVector),
-          probabilitiesVectorArgmax = probabilitiesVector.argmax(),
-          index = probabilitiesVectorArgmax; ///
-
-    token = this.vocabulary.tokenAt(index);
-
-    return token;
+    return modelResult;
   }
 
   infer(token, length) {
@@ -118,6 +92,18 @@ export default registryAssigned(class Model extends Element {
     }
 
     return tokens;
+  }
+
+  forward(token) {
+    const { OneHotVector } = registry,
+        oneHotVector = OneHotVector.fromTokenAndVocabulary(token, this.vocabulary),
+        probabilitiesVector = this.weights.forward(oneHotVector),
+        probabilitiesVectorArgmax = probabilitiesVector.argmax(),
+        index = probabilitiesVectorArgmax; ///
+
+    token = this.vocabulary.tokenAt(index);
+
+    return token;
   }
 
   serialise(filePath = DEFAULT_MODEL_FILE_PATH) {

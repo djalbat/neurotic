@@ -21,7 +21,7 @@ export default registryAssigned(class Weights extends Element {
     this.matrix.initialise(size);
   }
 
-  train(oneHotVectors, learningRate) {
+  step(oneHotVectors, learningRate) {
     const [ inputOneHotVector, outputOneHotVector ] = oneHotVectors,
           logitsVector = this.matrix.multiplyVector(inputOneHotVector),
           logitsVectorSoftmax = logitsVector.softmax(),
@@ -32,10 +32,10 @@ export default registryAssigned(class Weights extends Element {
 
     this.matrix = this.matrix.subtractMatrix(scaledDeltasMatrix);
 
-    const { Result } = registry,
-          result = Result.fromOutputOneHotVectorAndProbabilitiesVector(outputOneHotVector, probabilitiesVector);
+    const { WeightsResult } = registry,
+          weightsResult = WeightsResult.fromOutputOneHotVectorAndProbabilitiesVector(outputOneHotVector, probabilitiesVector);
 
-    return result;
+    return weightsResult;
   }
 
   evaluate(oneHotVectors) {
@@ -44,10 +44,10 @@ export default registryAssigned(class Weights extends Element {
           logitsVectorSoftmax = logitsVector.softmax(),
           probabilitiesVector = logitsVectorSoftmax;  ///
 
-    const { Result } = registry,
-          result = Result.fromOutputOneHotVectorAndProbabilitiesVector(outputOneHotVector, probabilitiesVector);
+    const { WeightsResult } = registry,
+          weightsResult = WeightsResult.fromOutputOneHotVectorAndProbabilitiesVector(outputOneHotVector, probabilitiesVector);
 
-    return result;
+    return weightsResult;
   }
 
   forward(oneHotVector) {
