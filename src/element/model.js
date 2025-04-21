@@ -1,7 +1,8 @@
 "use strict";
 
-import { fileSystemUtilities } from "necessary/lib/main";
+import { arrayUtilities, fileSystemUtilities } from "necessary";
 
+import Matrix from "../matrix";
 import Weights from "./weights";
 import Element from "../element";
 import Vocabulary from "./vocabulary";
@@ -12,11 +13,12 @@ import { elementFromChildElements } from "../utilities/element";
 import { weightsFromJSON, vocabularyFromJSON } from "../utilities/json";
 import { DEFAULT_BATCH, DEFAULT_EPOCHS, DEFAULT_SAMPLING, DEFAULT_LEARNING_RATE, DEFAULT_MODEL_FILE_PATH } from "../defaults";
 
-const { writeFile } = fileSystemUtilities;
+const { first } = arrayUtilities,
+      { writeFile } = fileSystemUtilities;
 
 export default class Model extends Element {
-  constructor(vocabulary, weights) {
-    super();
+  constructor(properties, childElements, vocabulary, weights) {
+    super(properties, childElements);
 
     this.vocabulary = vocabulary;
     this.weights = weights;
@@ -47,20 +49,24 @@ export default class Model extends Element {
   }
 
   step(corpus, batch = DEFAULT_BATCH, learningRate = DEFAULT_LEARNING_RATE) {
-    const weightsResults = corpus.mapChunk((chunk) => {
-            const oneHotVectors = oneHotVectorsFromChunkAnvVocabulary(chunk, this.vocabulary),
-                  [ inputOneHotVector, outputOneHotVector ] = oneHotVectors,
-                  weightsResult = this.weights.prepare(inputOneHotVector, outputOneHotVector, learningRate);
+    const weightsResults = [];
 
-            if (!batch) {
-              const deltaMatrix = weightsResult.getDeltaMatrix(),
-                    scaledDeltaMatrix = deltaMatrix.multiplyByScalar(learningRate);
+    corpus.forEachChunk((chunk) => {
+      chunk.forEachPair((pair) => {
+        const oneHotVectors = pair.asOneHotVectors(this.vocabulary),
+              [ inputOneHotVector, outputOneHotVector ] = oneHotVectors,
+              weightsResult = this.weights.prepare(inputOneHotVector, outputOneHotVector, learningRate);
 
-              this.weights.update(scaledDeltaMatrix);
-            }
+        if (!batch) {
+          const deltaMatrix = weightsResult.getDeltaMatrix(),
+                scaledDeltaMatrix = deltaMatrix.multiplyByScalar(learningRate);
 
-            return weightsResult;
-          });
+          this.weights.update(scaledDeltaMatrix);
+        }
+
+        weightsResults.push(weightsResult);
+      });
+    });
 
     if (batch) {
       const deltaMatrices = weightsResults.map((weightsResult) => {
@@ -92,13 +98,19 @@ export default class Model extends Element {
   }
 
   evaluate(corpus) {
-    const weightsResults = corpus.mapChunk((chunk) => {
-            const oneHotVectors = oneHotVectorsFromChunkAnvVocabulary(chunk, this.vocabulary),
-                  weightsResult = this.weights.evaluate(oneHotVectors);
+    const weightsResults = [];
 
-            return weightsResult;
-          }),
-          modelResult = ModelResult.fromCorpusAndWeightsResults(corpus, weightsResults);
+    corpus.forEachChunk((chunk) => {
+      chunk.forEachPair((pair) => {
+        const oneHotVectors = pair.asOneHotVectors(this.vocabulary),
+              [ inputOneHotVector, outputOneHotVector ] = oneHotVectors,
+              weightsResult = this.weights.evaluate(inputOneHotVector, outputOneHotVector);
+
+        weightsResults.push(weightsResult);
+      });
+    });
+
+    const modelResult = ModelResult.fromCorpusAndWeightsResults(corpus, weightsResults);
 
     return modelResult;
   }
@@ -167,16 +179,18 @@ export default class Model extends Element {
 }
 
 function meanOfMatrices(matrices) {
+  const firstMatrix = first(matrices),
+        rows = firstMatrix.getRows(),
+        columns = firstMatrix.getColumns();
 
-}
+  let totalMatrix = Matrix.fromRowsAndColumns(rows, columns);
 
-function oneHotVectorsFromChunkAnvVocabulary(chunk, vocabulary) {
-  const tokens = chunk, ///
-        oneHotVectors = tokens.map((token) => {
-          const oneHotVector = OneHotVector.fromTokenAndVocabulary(token, vocabulary);
+  matrices.forEach((matrix) => {
+    totalMatrix = totalMatrix.addMatrix(matrix);
+  });
 
-          return oneHotVector;
-        });
+  const length = matrices.length,
+        meanMatrix = totalMatrix.divideByScalar(length);
 
-  return oneHotVectors;
+  return meanMatrix;
 }

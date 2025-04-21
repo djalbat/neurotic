@@ -10,8 +10,8 @@ import WeightsResult from "../result/weights";
 import { matrixFromJSON } from "../utilities/json";
 
 export default class Weights extends Element {
-  constructor(matrix) {
-    super();
+  constructor(properties, childElements, matrix) {
+    super(properties, childElements);
 
     this.matrix = matrix;
   }
@@ -30,7 +30,7 @@ export default class Weights extends Element {
           probabilitiesVector = logitsVectorSoftmax,  ///
           gradientVector = probabilitiesVector.subtractVector(outputOneHotVector),
           deltaMatrix = inputOneHotVector.outerMultiplyByVector(gradientVector),
-          weightsResult = WeightsResult.fromOutputOneHotVectorAndProbabilitiesVectorAndDeltaMatrix(outputOneHotVector, probabilitiesVector, deltaMatrix);
+          weightsResult = WeightsResult.fromOutputOneHotVectorProbabilitiesVectorAndDeltaMatrix(outputOneHotVector, probabilitiesVector, deltaMatrix);
 
     return weightsResult;
   }
@@ -50,8 +50,9 @@ export default class Weights extends Element {
     return probabilitiesVector;
   }
 
-  evaluate(oneHotVector) {
-    const oneHotVectorFloat32Array = oneHotVector.toFloat32Array(),
+  evaluate(inputOneHotVector, outputOneHotVector) {
+    const oneHotVector = inputOneHotVector, ///
+          oneHotVectorFloat32Array = oneHotVector.toFloat32Array(),
           matrixFloat32Array = this.matrix.toFloat32Array(),
           rows = this.matrix.getRows(),
           columns = this.matrix.getColumns(),

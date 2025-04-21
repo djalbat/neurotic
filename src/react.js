@@ -1,18 +1,16 @@
 "use strict";
 
 import Element from "./element";
-import FunctionElement from "./element/function";
 
-import { FUNCTION } from "./constants";
-import { flatten, guarantee } from "./utilities/array";
+import { flatten } from "./utilities/array";
 import { removeFalseyElements } from "./utilities/elements";
 
 function createElement(firstArgument, properties, ...childElements) {
+  let element = null;
+
   properties = properties || {};  ///
 
   childElements = sanitiseChildElements(childElements); ///
-
-  let element;
 
   if (isSubclassOf(firstArgument, Element)) {
     const Class = firstArgument;  ///
@@ -22,15 +20,6 @@ function createElement(firstArgument, properties, ...childElements) {
     });
 
     element = Class.fromProperties(properties);
-  } else if (typeof firstArgument === FUNCTION) {
-    const func = firstArgument,  ///
-          childElements = guarantee(func(properties));
-
-    Object.assign(properties, {
-      childElements
-    });
-
-    element = FunctionElement.fromProperties(properties);
   }
 
   return element;

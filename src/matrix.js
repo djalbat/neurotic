@@ -1,6 +1,9 @@
 "use strict";
 
-import { multiplyMatrixByScalar, subtractMatrixFromMatrix } from "../lib.node";
+import { addMatrixToMatrix, 
+         divideMatrixByScalar, 
+         multiplyMatrixByScalar, 
+         subtractMatrixFromMatrix } from "../lib.node";
 
 import { random } from "./utilities/random";
 
@@ -23,12 +26,31 @@ export default class Matrix {
     return this.elements;
   }
 
+  addMatrix(matrix) {
+    const matrixA = matrix, ///
+          matrixB = this, ///
+          matrixAFloat32Array = matrixA.toFloat32Array(),
+          matrixBFloat32Array = matrixB.toFloat32Array(),
+          resultFloat32Array = addMatrixToMatrix(matrixAFloat32Array, matrixBFloat32Array),
+          resultMatrix = Matrix.fromRowsColumnsAndFloat32Array(this.rows, this.columns, resultFloat32Array);
+    
+    return resultMatrix;
+  }
+
   subtractMatrix(matrix) {
     const matrixA = matrix, ///
           matrixB = this, ///
           matrixAFloat32Array = matrixA.toFloat32Array(),
           matrixBFloat32Array = matrixB.toFloat32Array(),
           resultFloat32Array = subtractMatrixFromMatrix(matrixAFloat32Array, matrixBFloat32Array),
+          resultMatrix = Matrix.fromRowsColumnsAndFloat32Array(this.rows, this.columns, resultFloat32Array);
+
+    return resultMatrix;
+  }
+
+  divideByScalar(scalar) {
+    const matrixFloat32Array = this.toFloat32Array(),
+          resultFloat32Array = divideMatrixByScalar(matrixFloat32Array, scalar),
           resultMatrix = Matrix.fromRowsColumnsAndFloat32Array(this.rows, this.columns, resultFloat32Array);
 
     return resultMatrix;
@@ -92,36 +114,25 @@ export default class Matrix {
 
     return matrix;
   }
-
-  static fromRowsColumnsAndElements(Class, rows, columns, elements) {
-    if (elements === undefined) {
-      elements = columns; ///
-
-      columns = rows; ///
-
-      rows = Class; ///
-
-      Class = Matrix; ///
+  
+  static fromRowsAndColumns(rows, columns) {
+    const elements = [],
+          cardinality = rows * columns;
+    
+    for (let index = 0; index < cardinality; index++) {
+      const element = 0;
+      
+      elements.push(element);
     }
-
-    const matrix = new Class(rows, columns, elements);
-
+    
+    const matrix = new Matrix(rows, columns, elements);
+    
     return matrix;
   }
 
-  static fromRowsColumnsAndFloat32Array(Class, rows, columns, float32Array) {
-    if (float32Array === undefined) {
-      float32Array = columns; ///
-
-      columns = rows; ///
-
-      rows = Class; ///
-
-      Class = Matrix; ///
-    }
-
+  static fromRowsColumnsAndFloat32Array(rows, columns, float32Array) {
     const elements = Array.from(float32Array),
-          matrix = new Class(rows, columns, elements);
+          matrix = new Matrix(rows, columns, elements);
 
     return matrix;
   }

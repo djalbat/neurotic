@@ -3,6 +3,7 @@
 import { fileSystemUtilities } from "necessary";
 
 import { DEFAULT_CORPUS_FILE_PATH } from "./defaults";
+import { chunksFromJSON, chunksToChunksJSON } from "./utilities/json";
 
 const { readFile } = fileSystemUtilities;
 
@@ -27,7 +28,8 @@ export default class Corpus {
   forEachChunk(callback) { this.chunks.forEach(callback); }
 
   toJSON() {
-    const chunks = this.chunks,
+    const chunksJSON = chunksToChunksJSON(this.chunks),
+          chunks = chunksJSON,  ///
           json = {
             chunks
           };
@@ -36,7 +38,7 @@ export default class Corpus {
   }
 
   static fromJSON(json) {
-    const chunks = json,  //
+    const chunks = chunksFromJSON(json),
           corpus = new Corpus(chunks);
 
     return corpus;

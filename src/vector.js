@@ -1,6 +1,12 @@
 "use strict";
 
-import { softmaxVector, multiplyVectorByScalar, multiplyVectorByMatrix, subtractVectorFromVector, outerMultiplyVectorByVector } from "../lib.node";
+import { softmaxVector,
+         addVectorToVector,
+         divideVectorByScalar,
+         multiplyVectorByScalar,
+         multiplyVectorByMatrix,
+         subtractVectorFromVector,
+         outerMultiplyVectorByVector } from "../lib.node";
 
 import Matrix from "./matrix";
 
@@ -92,12 +98,31 @@ export default class Vector {
     return index;
   }
 
+  addVector(vector) {
+    const vectorA = vector, ///
+          vectorB = this, ///
+          vectorAFloat32Array = vectorA.toFloat32Array(),
+          vectorBFloat32Array = vectorB.toFloat32Array(),
+          resultFloat32Array = addVectorToVector(vectorAFloat32Array, vectorBFloat32Array),
+          resultVector = Vector.fromFloat32Array(resultFloat32Array);
+
+    return resultVector;
+  }
+
   subtractVector(vector) {
     const vectorA = vector, ///
           vectorB = this, ///
           vectorAFloat32Array = vectorA.toFloat32Array(),
           vectorBFloat32Array = vectorB.toFloat32Array(),
           resultFloat32Array = subtractVectorFromVector(vectorAFloat32Array, vectorBFloat32Array),
+          resultVector = Vector.fromFloat32Array(resultFloat32Array);
+
+    return resultVector;
+  }
+
+  divideByScalar(scalar) {
+    const vectorFloat32Array = this.toFloat32Array(),
+          resultFloat32Array = divideVectorByScalar(vectorFloat32Array, scalar),
           resultVector = Vector.fromFloat32Array(resultFloat32Array);
 
     return resultVector;

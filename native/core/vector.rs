@@ -15,6 +15,26 @@ pub fn softmax_vector(vector: &[f32]) -> Vec<f32> {
     result
 }
 
+pub fn add_vector_to_vector(vector_a: &[f32], vector_b: &[f32]) -> Vec<f32> {
+    assert_eq!(vector_a.len(), vector_b.len(), "Vectors must be the same length");
+
+    let result: Vec<f32> = vector_a
+        .iter()
+        .zip(vector_b.iter())
+        .map(|(element_a, element_b)| element_a + element_b)
+        .collect();
+
+    result
+}
+
+pub fn divide_vector_by_scalar(vector: &[f32], scalar: f32) -> Vec<f32> {
+    let result = vector.iter()
+        .map(|element_a| element_a / scalar)
+        .collect();
+
+    result
+}
+
 pub fn multiply_vector_by_scalar(vector: &[f32], scalar: f32) -> Vec<f32> {
     let result = vector.iter()
         .map(|element_a| element_a * scalar)
@@ -90,7 +110,32 @@ mod tests {
     }
 
     #[test]
-    fn test_vector_scalar_multiply() {
+    fn test_add_vector_to_vector() {
+        let vector_a = vec![0.8, 0.1];
+        let vector_b = vec![0.8, 1.0];
+
+        let result = add_vector_to_vector(&vector_a, &vector_b);
+        let expected = vec![1.6, 1.1];
+
+        for (result_element, expected_element) in result.iter().zip(expected.iter()) {
+            assert!((result_element - expected_element).abs() < MARGIN_OF_ERROR);
+        }
+    }
+
+    #[test]
+    fn test_divide_vector_by_scalar() {
+        let vector = vec![4.0, 1.0, 0.1];
+        let scalar = 2.0;
+
+        let result = divide_vector_by_scalar(&vector, scalar);
+        let expected = vec![2.0, 0.5, 0.05];
+        for (result_element, expected_element) in result.iter().zip(expected.iter()) {
+            assert!((result_element - expected_element).abs() < MARGIN_OF_ERROR);
+        }
+    }
+
+    #[test]
+    fn test_multiply_vector_by_scalar() {
         let vector = vec![2.0, 1.0, 0.1];
         let scalar = 2.3;
 

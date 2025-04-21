@@ -30,4 +30,6 @@ const token = "Fluffy",
 
 console.log(JSON.stringify(tokens));
 
+model.evaluate(corpus);
+
 model.serialise();

@@ -1,5 +1,6 @@
 "use strict";
 
+import Chunk from "../chunk";
 import Matrix from "../matrix";
 import Weights from "../element/weights";
 import Vocabulary from "../element/vocabulary";
@@ -14,6 +15,18 @@ export function matrixFromJSON(json) {
   matrix = Matrix.fromJSON(json);
 
   return matrix;
+}
+
+export function chunksFromJSON(json) {
+  const chunksJSON = json,  ///
+        chunks = chunksJSON.map((chunkJSON) => {
+          const json = chunkJSON, ///
+            chunk = Chunk.fromJSON(json);
+
+          return chunk;
+        });
+
+  return chunks;
 }
 
 export function weightsFromJSON(json) {
@@ -39,3 +52,14 @@ export function vocabularyFromJSON(json) {
 
   return vocabulary;
 }
+
+export function chunksToChunksJSON(chunks) {
+  const chunksJSON = chunks.map((chunk) => {
+    const chunkJSON = chunk.toJSON();
+
+    return chunkJSON;
+  });
+
+  return chunksJSON;
+}
+
