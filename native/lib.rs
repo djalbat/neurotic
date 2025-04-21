@@ -14,16 +14,6 @@ pub fn forward(one_hot_vector: Float32Array, matrix: Float32Array, rows: u32, co
 }
 
 #[napi]
-pub fn evaluate(one_hot_vector: Float32Array, matrix: Float32Array, rows: u32, cols: u32) -> Float32Array {
-    let one_hot_vector = one_hot_vector.as_ref();
-    let matrix = matrix.as_ref();
-
-    let result = core::weights::evaluate(one_hot_vector, matrix, rows, cols);
-
-    Float32Array::from(result)
-}
-
-#[napi]
 pub fn softmax_vector(vector: Float32Array) -> Float32Array {
     let vector = vector.as_ref();
 

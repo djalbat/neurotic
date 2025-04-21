@@ -1,11 +1,10 @@
 "use strict";
 
-import { evaluate, forward } from "../../lib.node";
+import { forward } from "../../lib.node";
 
-import Vector from "../vector";
 import Matrix from "../matrix";
 import Element from "../element";
-import WeightsResult from "../result/weights";
+import ProbabilitiesVector from "../vector/probabilities";
 
 import { matrixFromJSON } from "../utilities/json";
 
@@ -27,12 +26,11 @@ export default class Weights extends Element {
   prepare(inputOneHotVector, outputOneHotVector) {
     const logitsVector = inputOneHotVector.multiplyByMatrix(this.matrix),
           logitsVectorSoftmax = logitsVector.softmax(),
-          probabilitiesVector = logitsVectorSoftmax,  ///
+          probabilitiesVector = ProbabilitiesVector.fromVector(logitsVectorSoftmax),  ///
           gradientVector = probabilitiesVector.subtractVector(outputOneHotVector),
-          deltaMatrix = inputOneHotVector.outerMultiplyByVector(gradientVector),
-          weightsResult = WeightsResult.fromOutputOneHotVectorProbabilitiesVectorAndDeltaMatrix(outputOneHotVector, probabilitiesVector, deltaMatrix);
+          deltaMatrix = inputOneHotVector.outerMultiplyByVector(gradientVector);
 
-    return weightsResult;
+    return deltaMatrix;
   }
 
   update(scaledDeltasMatrix) {
@@ -45,22 +43,9 @@ export default class Weights extends Element {
           rows = this.matrix.getRows(),
           columns = this.matrix.getColumns(),
           probabilitiesFloat32Array = forward(oneHotVectorFloat32Array, matrixFloat32Array, rows, columns),
-          probabilitiesVector = Vector.fromFloat32Array(probabilitiesFloat32Array);
+          probabilitiesVector = ProbabilitiesVector.fromFloat32Array(probabilitiesFloat32Array);
 
     return probabilitiesVector;
-  }
-
-  evaluate(inputOneHotVector, outputOneHotVector) {
-    const oneHotVector = inputOneHotVector, ///
-          oneHotVectorFloat32Array = oneHotVector.toFloat32Array(),
-          matrixFloat32Array = this.matrix.toFloat32Array(),
-          rows = this.matrix.getRows(),
-          columns = this.matrix.getColumns(),
-          probabilitiesFloat32Array = evaluate(oneHotVectorFloat32Array, matrixFloat32Array, rows, columns),
-          probabilitiesVector = Vector.fromFloat32Array(probabilitiesFloat32Array),
-          weightsResult = WeightsResult.fromOutputOneHotVectorAndProbabilitiesVector(outputOneHotVector, probabilitiesVector);
-
-    return weightsResult;
   }
 
   toJSON() {

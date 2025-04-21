@@ -5,7 +5,7 @@ import { addMatrixToMatrix,
          multiplyMatrixByScalar, 
          subtractMatrixFromMatrix } from "../lib.node";
 
-import { random } from "./utilities/random";
+import { DECIMAL_PLACES } from "./constants";
 
 export default class Matrix {
   constructor(rows, columns, elements) {
@@ -69,15 +69,48 @@ export default class Matrix {
     this.columns = size; ///
     this.elements = [];
 
-    const cardinality = this.rows * this.columns,
-          lowerBound = -1,
-          upperBound = +1;
+    const element = 1 / size,
+          cardinality = size * size;
 
     for (let count = 0; count < cardinality; count++) {
-      const element = random(lowerBound, upperBound);
-
       this.elements.push(element);
     }
+  }
+
+  asString() {
+    let string = "[\n";
+
+    const lastRow = this.rows -1,
+          lastColumn = this.columns -1;
+
+    for (let row = 0; row < this.rows; row++) {
+      string += "  ";
+
+      for (let column = 0; column < this.columns; column++) {
+        const index = row * this.columns + column,
+              element = this.elements[index],
+              number = Number(element),
+              roundedNumber = number.toFixed(DECIMAL_PLACES);
+
+        if (roundedNumber >= 0) {
+          string += "+";
+        }
+
+        string += roundedNumber;
+
+        if (column < lastColumn) {
+          string += ", ";
+        }
+      }
+
+      if (row < lastRow) {
+        string += ",\n";
+      }
+    }
+
+    string += "\n]";
+
+    return string;
   }
 
   toJSON() {
@@ -121,7 +154,7 @@ export default class Matrix {
     
     for (let index = 0; index < cardinality; index++) {
       const element = 0;
-      
+
       elements.push(element);
     }
     

@@ -11,6 +11,8 @@ export default class Chunk {
     return this.tokens;
   }
 
+  forEachToken(callback) { this.tokens.forEach(callback); }
+
   forEachPair(callback) {
     const tokensLength = this.tokens.length,
           pairsLength = tokensLength - 1;

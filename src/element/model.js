@@ -6,12 +6,17 @@ import Matrix from "../matrix";
 import Weights from "./weights";
 import Element from "../element";
 import Vocabulary from "./vocabulary";
-import ModelResult from "../result/model";
 import OneHotVector from "../vector/oneHot";
 
 import { elementFromChildElements } from "../utilities/element";
 import { weightsFromJSON, vocabularyFromJSON } from "../utilities/json";
-import { DEFAULT_BATCH, DEFAULT_EPOCHS, DEFAULT_SAMPLING, DEFAULT_LEARNING_RATE, DEFAULT_MODEL_FILE_PATH } from "../defaults";
+import { DEFAULT_BATCH,
+         DEFAULT_EPOCHS,
+         DEFAULT_CUTOFF,
+         DEFAULT_THRESHOLD,
+         DEFAULT_TEMPERATURE,
+         DEFAULT_LEARNING_RATE,
+         DEFAULT_MODEL_FILE_PATH } from "../defaults";
 
 const { first } = arrayUtilities,
       { writeFile } = fileSystemUtilities;
@@ -49,77 +54,53 @@ export default class Model extends Element {
   }
 
   step(corpus, batch = DEFAULT_BATCH, learningRate = DEFAULT_LEARNING_RATE) {
-    const weightsResults = [];
+    const deltaMatrices = [];
 
     corpus.forEachChunk((chunk) => {
       chunk.forEachPair((pair) => {
         const oneHotVectors = pair.asOneHotVectors(this.vocabulary),
               [ inputOneHotVector, outputOneHotVector ] = oneHotVectors,
-              weightsResult = this.weights.prepare(inputOneHotVector, outputOneHotVector, learningRate);
+              deltaMatrix = this.weights.prepare(inputOneHotVector, outputOneHotVector, learningRate);
 
-        if (!batch) {
-          const deltaMatrix = weightsResult.getDeltaMatrix(),
-                scaledDeltaMatrix = deltaMatrix.multiplyByScalar(learningRate);
+        if (batch) {
+          deltaMatrices.push(deltaMatrix);
 
-          this.weights.update(scaledDeltaMatrix);
+          return;
         }
 
-        weightsResults.push(weightsResult);
+        const scaledDeltaMatrix = deltaMatrix.multiplyByScalar(learningRate);
+
+        this.weights.update(scaledDeltaMatrix);
       });
     });
 
     if (batch) {
-      const deltaMatrices = weightsResults.map((weightsResult) => {
-              const deltaMatrix = weightsResult.getDeltaMatrix();
-
-              return deltaMatrix;
-            }),
-            meanDeltaMatrix = meanOfMatrices(deltaMatrices),
+      const meanDeltaMatrix = meanOfMatrices(deltaMatrices),
             scaledMeanDeltaMatrix = meanDeltaMatrix.multiplyByScalar(learningRate);
 
       this.weights.update(scaledMeanDeltaMatrix);
     }
-
-    const modelResult = ModelResult.fromCorpusAndWeightsResults(corpus, weightsResults);
-
-    return modelResult;
   }
 
   train(corpus, batch = DEFAULT_BATCH, epochs = DEFAULT_EPOCHS, learningRate = DEFAULT_LEARNING_RATE) {
     const results = []
 
     for (let count = 0; count < epochs; count++) {
-      const result = this.step(corpus, batch, learningRate);
-
-      results.push(result);
+      this.step(corpus, batch, learningRate);
     }
 
     return results;
   }
 
-  evaluate(corpus) {
-    const weightsResults = [];
-
-    corpus.forEachChunk((chunk) => {
-      chunk.forEachPair((pair) => {
-        const oneHotVectors = pair.asOneHotVectors(this.vocabulary),
-              [ inputOneHotVector, outputOneHotVector ] = oneHotVectors,
-              weightsResult = this.weights.evaluate(inputOneHotVector, outputOneHotVector);
-
-        weightsResults.push(weightsResult);
-      });
-    });
-
-    const modelResult = ModelResult.fromCorpusAndWeightsResults(corpus, weightsResults);
-
-    return modelResult;
-  }
-
-  infer(token, length, sampling = DEFAULT_SAMPLING) {
+  infer(token, length, cutoff = DEFAULT_CUTOFF, threshold = DEFAULT_THRESHOLD, temperature = DEFAULT_TEMPERATURE) {
     const tokens = [];
 
     for (let count = 0; count < length; count++) {
-      token = this.forward(token, sampling);
+      token = this.forward(token, cutoff, threshold, temperature);
+
+      if (token === null) {
+        break;
+      }
 
       tokens.push(token);
     }
@@ -127,12 +108,14 @@ export default class Model extends Element {
     return tokens;
   }
 
-  forward(token, sampling = DEFAULT_SAMPLING) {
+  forward(token, cutoff = DEFAULT_CUTOFF, threshold = DEFAULT_THRESHOLD, temperature = DEFAULT_TEMPERATURE) {
     const oneHotVector = OneHotVector.fromTokenAndVocabulary(token, this.vocabulary),
           probabilitiesVector = this.weights.forward(oneHotVector),
-          index = probabilitiesVector.predictIndex(sampling);
+          index = probabilitiesVector.predictIndex(cutoff, threshold, temperature);
 
-    token = this.vocabulary.tokenAt(index);
+    token = (index !== null) ?
+              this.vocabulary.tokenAt(index) :
+                null;
 
     return token;
   }

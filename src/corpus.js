@@ -27,6 +27,20 @@ export default class Corpus {
 
   forEachChunk(callback) { this.chunks.forEach(callback); }
 
+  asTokens() {
+    const tokenMap = {};
+
+    this.forEachChunk((chunk) => {
+      chunk.forEachToken((token) => {
+        tokenMap[token] = token;
+      });
+    });
+
+    const tokens = Object.keys(tokenMap);
+
+    return tokens;
+  }
+
   toJSON() {
     const chunksJSON = chunksToChunksJSON(this.chunks),
           chunks = chunksJSON,  ///

@@ -10,8 +10,7 @@ import { softmaxVector,
 
 import Matrix from "./matrix";
 
-import { random } from "./utilities/random";
-import { DEFAULT_SAMPLING } from "./defaults";
+import { DECIMAL_PLACES } from "./constants";
 
 export default class Vector {
   constructor(elements) {
@@ -37,65 +36,10 @@ export default class Vector {
     return resultVector;
   }
 
-  argmax() {
-    let maximumElement = -Infinity
-
-    const elements = this.getElements(),
-          argmax = elements.reduce((argmax, element, index) => {
-            if (element > maximumElement) {
-              maximumElement = element; ///
-
-              argmax = index; ///
-            }
-
-            return argmax;
-          }, -1);
-
-    return argmax;
-  }
-
-  sample() {
-    let index,
-        position = 0;
-
-    const number = random(),
-          length = this.elements.length;
-
-    do {
-      for (index = 0; index < length; index++) {
-        const element = this.elements[index];
-
-        position += element;
-
-        if (number < position) {
-          break;
-        }
-      }
-    } while (index === length);
-
-    return index;
-  }
-
   elementAt(index) {
     const element = this.elements[index];
 
     return element;
-  }
-
-  predictIndex(sampling = DEFAULT_SAMPLING) {
-    let index;
-
-    if (sampling) {
-      const sample = this.sample();
-
-      index = sample; ///
-    } else {
-      const argmax = this.argmax();
-
-      index = argmax;  ///
-    }
-
-    return index;
   }
 
   addVector(vector) {
@@ -162,6 +106,35 @@ export default class Vector {
     return resultMatrix;
   }
 
+  asString() {
+    let string = "";
+
+    string += "[ ";
+
+    const width = this.getWidth(),
+          lastIndex = width - 1;
+
+    for (let index = 0; index < width; index++) {
+      const element = this.elements[index],
+            number = Number(element),
+            roundedNumber = number.toFixed(DECIMAL_PLACES);
+
+      if (roundedNumber >= 0) {
+        string += "+";
+      }
+
+      string += roundedNumber;
+
+      if (index < lastIndex) {
+        string += ", ";
+      }
+    }
+
+    string += " ]";
+
+    return string;
+  }
+
   toJSON() {
     const elements = this.elements,
           json = {
@@ -177,27 +150,15 @@ export default class Vector {
     return float32Array;
   }
 
-  static fromElements(Class, elements) {
-    if (elements === undefined) {
-      elements = Class; ///
-
-      Class = Vector; ///
-    }
-
-    const vector = new Class(elements);
+  static fromElements(elements) {
+    const vector = new Vector(elements);
 
     return vector;
   }
 
-  static fromFloat32Array(Class, float32Array) {
-    if (float32Array === undefined) {
-      float32Array = Class; ///
-
-      Class = Vector; ///
-    }
-
+  static fromFloat32Array(float32Array) {
     const elements = Array.from(float32Array),  ///
-          vector = new Class(elements);
+          vector = new Vector(elements);
 
     return vector;
   }
