@@ -16,8 +16,6 @@ pub fn softmax_vector(vector: &[f32]) -> Vec<f32> {
 }
 
 pub fn add_vector_to_vector(vector_a: &[f32], vector_b: &[f32]) -> Vec<f32> {
-    assert_eq!(vector_a.len(), vector_b.len(), "Vectors must be the same length");
-
     let result: Vec<f32> = vector_a
         .iter()
         .zip(vector_b.iter())
@@ -44,9 +42,6 @@ pub fn multiply_vector_by_scalar(vector: &[f32], scalar: f32) -> Vec<f32> {
 }
 
 pub fn multiply_vector_by_matrix(vector: &[f32], matrix: &[f32], rows: u32, columns: u32) -> Vec<f32> {
-    assert_eq!(matrix.len(), (rows * columns) as usize, "Matrix size mismatch");
-    assert_eq!(vector.len(), rows as usize, "Vector size mismatch");
-
     let mut result = Vec::with_capacity(rows as usize);
 
     for column in 0..columns {
@@ -65,8 +60,6 @@ pub fn multiply_vector_by_matrix(vector: &[f32], matrix: &[f32], rows: u32, colu
 }
 
 pub fn subtract_vector_from_vector(vector_a: &[f32], vector_b: &[f32]) -> Vec<f32> {
-    assert_eq!(vector_a.len(), vector_b.len(), "Vectors must be the same length");
-
     let result: Vec<f32> = vector_a
         .iter()
         .zip(vector_b.iter())

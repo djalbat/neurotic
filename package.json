@@ -1,7 +1,7 @@
 {
   "name": "neurotic",
   "author": "James Smith",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "license": "MIT, Anti-996",
   "homepage": "https://github.com/djalbat/neurotic",
   "description": "A JavaScript neural network.",

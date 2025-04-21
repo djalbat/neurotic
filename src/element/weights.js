@@ -19,10 +19,6 @@ export default class Weights extends Element {
     return this.matrix;
   }
 
-  initialise(size) {
-    this.matrix.initialise(size);
-  }
-
   prepare(inputOneHotVector, outputOneHotVector) {
     const logitsVector = inputOneHotVector.multiplyByMatrix(this.matrix),
           logitsVectorSoftmax = logitsVector.softmax(),
@@ -46,6 +42,10 @@ export default class Weights extends Element {
           probabilitiesVector = ProbabilitiesVector.fromFloat32Array(probabilitiesFloat32Array);
 
     return probabilitiesVector;
+  }
+
+  initialise(size) {
+    this.matrix.initialise(size);
   }
 
   toJSON() {

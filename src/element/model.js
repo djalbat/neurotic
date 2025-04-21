@@ -37,22 +37,6 @@ export default class Model extends Element {
     return this.weights;
   }
 
-  initialise() {
-    if (this.vocabulary === null) {
-      throw new Error("The model has no vocabulary.")
-    }
-
-    this.vocabulary.initialise();
-
-    if (this.weights === null) {
-      throw new Error("The model has no weights.")
-    }
-
-    const size = this.vocabulary.getSize();
-
-    this.weights.initialise(size);
-  }
-
   step(corpus, batch = DEFAULT_BATCH, learningRate = DEFAULT_LEARNING_RATE) {
     const deltaMatrices = [];
 
@@ -126,6 +110,14 @@ export default class Model extends Element {
           content = jsonString; ///
 
     writeFile(filePath, content);
+  }
+
+  initialise() {
+    this.vocabulary.initialise();
+    
+    const size = this.vocabulary.getSize();
+
+    this.weights.initialise(size);
   }
 
   toJSON() {

@@ -1,6 +1,4 @@
 pub fn add_matrix_to_matrix(matrix_a: &[f32], matrix_b: &[f32]) -> Vec<f32> {
-    assert_eq!(matrix_a.len(), matrix_b.len(), "Matrices must be the same length");
-
     let result: Vec<f32> = matrix_a
         .iter()
         .zip(matrix_b.iter())
@@ -27,8 +25,6 @@ pub fn multiply_matrix_by_scalar(matrix: &[f32], scalar: f32) -> Vec<f32> {
 }
 
 pub fn subtract_matrix_from_matrix(matrix_a: &[f32], matrix_b: &[f32]) -> Vec<f32> {
-    assert_eq!(matrix_a.len(), matrix_b.len(), "Matrices must be the same length");
-
     let result: Vec<f32> = matrix_a
         .iter()
         .zip(matrix_b.iter())

@@ -140,18 +140,6 @@ export default class ProbabilitiesVector extends Vector {
   }
 }
 
-function sortProbabilities(probabilities) {
-  probabilities = [
-    ...probabilities
-  ];
-
-  probabilities.sort();
-
-  probabilities.reverse();
-
-  return probabilities;
-}
-
 function sortIndexes(probabilities) {
   const indexes = [],
         length = probabilities.length;
