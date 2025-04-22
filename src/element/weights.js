@@ -3,7 +3,7 @@
 import Vector from "../vector";
 import Matrix from "../matrix";
 import Element from "../element";
-import ProbabilitiesVector from "../vector/probabilities";
+import ProbabilityVector from "../vector/probability";
 
 import { matrixFromJSON } from "../utilities/json";
 
@@ -23,9 +23,9 @@ export default class Weights extends Element {
     return this.matrix;
   }
 
-  train(pair, vocabulary) {
-    const inputOneHotVector = pair.inputOneHotVector(vocabulary),
-          outputOneHotVector = pair.outputOneHotVector(vocabulary),
+  train(transition, vocabulary) {
+    const inputOneHotVector = transition.inputOneHotVector(vocabulary),
+          outputOneHotVector = transition.outputOneHotVector(vocabulary),
           index = inputOneHotVector.getIndex(),
           row = index; ///
 
@@ -51,10 +51,11 @@ export default class Weights extends Element {
   forward(oneHotVector) {
     const index = oneHotVector.getIndex(),
           row = index, ///
+          count = this.getCountAtRow(row),
           vector = this.matrix.getVectorAtRow(Vector, row),
-          probabilitiesVector = ProbabilitiesVector.fromVector(vector);
+          probabilityVector = ProbabilityVector.fromVectorAndCount(vector, count);
 
-    return probabilitiesVector;
+    return probabilityVector;
   }
 
   getCountAtRow(row) {

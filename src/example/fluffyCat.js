@@ -5,18 +5,18 @@ import { Model, Corpus, Weights, Vocabulary } from "../index";  ///
 export default function fluffyCatExampleI() {
   let tokens;
 
-  // const corpus = Corpus.fromJSON([
-  //   ["Fluffy", "Cat"],
-  //   ["Smelly", "Dog"],
-  //   ["Fluffy", "Cat", "Purrs"],
-  //   ["Smelly", "Dog", "Barks"],
-  //   ["Dog", "Chases", "Cat"],
-  //   ["Cat", "Scratches", "Dog"]
-  // ]);
-
   const corpus = Corpus.fromJSON([
-    ["Cats", "Meow"]
+    ["Fluffy", "Cat"],
+    ["Smelly", "Dog"],
+    ["Fluffy", "Cat", "Purrs"],
+    ["Smelly", "Dog", "Barks"],
+    ["Dog", "Chases", "Cat"],
+    ["Cat", "Scratches", "Dog"]
   ]);
+
+  // const corpus = Corpus.fromJSON([
+  //   ["Cats", "Meow"]
+  // ]);
 
   tokens = corpus.asTokens();
 
@@ -31,14 +31,14 @@ export default function fluffyCatExampleI() {
 
   model.train(corpus);
 
-  console.log(model.weights.matrix.asString())
+  // console.log(model.weights.matrix.asString())
 
-  const token = "Cats",
-        length = 2,
-        cutoff = 1/3,
-        threshold = 1;
+  const token = "Fluffy",
+        length = 10;
 
-  tokens = model.infer(token, length, cutoff, threshold);
+  for (let count = 0; count < 50; count++) {
+    tokens = model.infer(token, length);
 
-  console.log(JSON.stringify(tokens));
+    console.log(JSON.stringify(tokens));
+  }
 }

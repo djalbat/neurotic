@@ -66,6 +66,8 @@ export default class Matrix {
   }
 
   divideByScalar(scalar) {
+    scalar = Number(scalar);  ///
+
     const matrixFloat32Array = this.toFloat32Array(),
           resultFloat32Array = divideMatrixByScalar(matrixFloat32Array, scalar),
           resultMatrix = Matrix.fromRowsColumnsAndFloat32Array(this.rows, this.columns, resultFloat32Array);
@@ -74,6 +76,8 @@ export default class Matrix {
   }
 
   multiplyByScalar(scalar) {
+    scalar = Number(scalar);  ///
+
     const matrixFloat32Array = this.toFloat32Array(),
           resultFloat32Array = multiplyMatrixByScalar(matrixFloat32Array, scalar),
           resultMatrix = Matrix.fromRowsColumnsAndFloat32Array(this.rows, this.columns, resultFloat32Array);

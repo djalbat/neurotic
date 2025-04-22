@@ -67,6 +67,8 @@ export default class Vector {
   }
 
   divideByScalar(scalar) {
+    scalar = Number(scalar);  ///
+
     const vectorFloat32Array = this.toFloat32Array(),
           resultFloat32Array = divideVectorByScalar(vectorFloat32Array, scalar),
           resultVector = Vector.fromFloat32Array(resultFloat32Array);
@@ -75,6 +77,8 @@ export default class Vector {
   }
 
   multiplyByScalar(scalar) {
+    scalar = Number(scalar);  ///
+
     const vectorFloat32Array = this.toFloat32Array(),
           resultFloat32Array = multiplyVectorByScalar(vectorFloat32Array, scalar),
           resultVector = Vector.fromFloat32Array(resultFloat32Array);
@@ -179,6 +183,18 @@ export default class Vector {
   static fromFloat32Array(float32Array) {
     const elements = Array.from(float32Array),  ///
           vector = new Vector(elements);
+
+    return vector;
+  }
+
+  static fromWidthAndElement(width, element) {
+    const elements = [];
+
+    for (let count = 0; count < width; count++) {
+      elements.push(element);
+    }
+
+    const vector = new Vector(elements);
 
     return vector;
   }

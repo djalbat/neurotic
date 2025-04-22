@@ -9,11 +9,9 @@ import Vocabulary from "./vocabulary";
 import OneHotVector from "../vector/oneHot";
 
 import { first } from "../utilities/array";
+import { DEFAULT_MODEL_FILE_PATH } from "../defaults";
 import { elementFromChildElements } from "../utilities/element";
 import { weightsFromJSON, vocabularyFromJSON } from "../utilities/json";
-import { DEFAULT_CUTOFF,
-         DEFAULT_THRESHOLD,
-         DEFAULT_MODEL_FILE_PATH } from "../defaults";
 
 const { writeFile } = fileSystemUtilities;
 
@@ -35,17 +33,17 @@ export default class Model extends Element {
 
   train(corpus) {
     corpus.forEachChunk((chunk) => {
-      chunk.forEachPair((pair) => {
-        this.weights.train(pair, this.vocabulary);
+      chunk.forEachTransition((transition) => {
+        this.weights.train(transition, this.vocabulary);
       });
     });
   }
 
-  infer(token, length, cutoff = DEFAULT_CUTOFF, threshold = DEFAULT_THRESHOLD) {
+  infer(token, length) {
     const tokens = [];
 
     for (let count = 0; count < length; count++) {
-      token = this.forward(token, cutoff, threshold);
+      token = this.forward(token);
 
       if (token === null) {
         break;
@@ -57,10 +55,10 @@ export default class Model extends Element {
     return tokens;
   }
 
-  forward(token, cutoff = DEFAULT_CUTOFF, threshold = DEFAULT_THRESHOLD) {
+  forward(token) {
     const oneHotVector = OneHotVector.fromTokenAndVocabulary(token, this.vocabulary),
-          probabilitiesVector = this.weights.forward(oneHotVector),
-          index = probabilitiesVector.predictIndex(cutoff, threshold);
+          probabilityVector = this.weights.forward(oneHotVector),
+          index = probabilityVector.predictIndex();
 
     token = (index !== null) ?
               this.vocabulary.getTokenAt(index) :
@@ -116,21 +114,4 @@ export default class Model extends Element {
 
     return model;
   }
-}
-
-function meanOfMatrices(matrices) {
-  const firstMatrix = first(matrices),
-        rows = firstMatrix.getRows(),
-        columns = firstMatrix.getColumns();
-
-  let totalMatrix = Matrix.fromRowsAndColumns(rows, columns);
-
-  matrices.forEach((matrix) => {
-    totalMatrix = totalMatrix.addMatrix(matrix);
-  });
-
-  const length = matrices.length,
-        meanMatrix = totalMatrix.divideByScalar(length);
-
-  return meanMatrix;
 }

@@ -1,6 +1,6 @@
 "use strict";
 
-import Pair from "./pair";
+import Transition from "./transition";
 
 export default class Chunk {
   constructor(tokens) {
@@ -13,17 +13,17 @@ export default class Chunk {
 
   forEachToken(callback) { this.tokens.forEach(callback); }
 
-  forEachPair(callback) {
+  forEachTransition(callback) {
     const tokensLength = this.tokens.length,
-          pairsLength = tokensLength - 1;
+          transitionsLength = tokensLength - 1;
 
-    for (let index = 0; index < pairsLength; index++) {
+    for (let index = 0; index < transitionsLength; index++) {
       const start = index,  ///
             end = index + 2,
             tokens = this.tokens.slice(start, end),
-            pair = Pair.fromTokens(tokens);
+            transition = Transition.fromTokens(tokens);
 
-      callback(pair);
+      callback(transition);
     }
   }
 

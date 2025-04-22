@@ -4,7 +4,7 @@ import OneHotVector from "./vector/oneHot";
 
 import { first, second } from "./utilities/array";
 
-export default class Pair {
+export default class Transition {
   constructor(tokens) {
     this.tokens = tokens;
   }
@@ -30,8 +30,8 @@ export default class Pair {
   }
 
   static fromTokens(tokens) {
-    const pair = new Pair(tokens);
+    const transition = new Transition(tokens);
 
-    return pair;
+    return transition;
   }
 }
