@@ -3,14 +3,19 @@
 import Vector from "../vector";
 
 export default class OneHotVector extends Vector {
-  argmax() {
-    const elements = this.getElements(),
-          argmax = elements.findIndex((element) => {
-            if (element === 1) {
-              return true;
-            }
-          });
+  constructor(elements, index) {
+    super(elements);
 
+    this.index = index;
+  }
+
+  getIndex() {
+    return this.index;
+  }
+
+  argmax() {
+    const argmax = this.index;
+    
     return argmax;
   }
 
@@ -27,7 +32,7 @@ export default class OneHotVector extends Vector {
       elements.push(element);
     }
 
-    const oneHotVector = new OneHotVector(elements);
+    const oneHotVector = new OneHotVector(elements, index);
 
     return oneHotVector;
   }

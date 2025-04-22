@@ -1,7 +1,6 @@
 "use strict";
 
-import { forward } from "../../lib.node";
-
+import Vector from "../vector";
 import Matrix from "../matrix";
 import Element from "../element";
 import ProbabilitiesVector from "../vector/probabilities";
@@ -9,42 +8,72 @@ import ProbabilitiesVector from "../vector/probabilities";
 import { matrixFromJSON } from "../utilities/json";
 
 export default class Weights extends Element {
-  constructor(properties, childElements, matrix) {
+  constructor(properties, childElements, vector, matrix) {
     super(properties, childElements);
 
+    this.vector = vector;
     this.matrix = matrix;
+  }
+
+  getVector() {
+    return this.vector;
   }
 
   getMatrix() {
     return this.matrix;
   }
 
-  prepare(inputOneHotVector, outputOneHotVector) {
-    const logitsVector = inputOneHotVector.multiplyByMatrix(this.matrix),
-          logitsVectorSoftmax = logitsVector.softmax(),
-          probabilitiesVector = ProbabilitiesVector.fromVector(logitsVectorSoftmax),  ///
-          gradientVector = probabilitiesVector.subtractVector(outputOneHotVector),
-          deltaMatrix = inputOneHotVector.outerMultiplyByVector(gradientVector);
+  train(pair, vocabulary) {
+    const inputOneHotVector = pair.inputOneHotVector(vocabulary),
+          outputOneHotVector = pair.outputOneHotVector(vocabulary),
+          index = inputOneHotVector.getIndex(),
+          row = index; ///
 
-    return deltaMatrix;
-  }
+    let count,
+        vector;
 
-  update(scaledDeltasMatrix) {
-    this.matrix = this.matrix.subtractMatrix(scaledDeltasMatrix);
+    count = this.getCountAtRow(row);
+
+    vector = this.matrix.getVectorAtRow(Vector, row);
+
+    const weightedVector = vector.multiplyByScalar(count),
+          augmentedWeightsVector = weightedVector.addVector(outputOneHotVector);
+
+    count++;
+
+    vector = augmentedWeightsVector.divideByScalar(count);
+
+    this.setCountAtRow(row, count);
+
+    this.matrix.setVectorAtRow(row, vector);
   }
 
   forward(oneHotVector) {
-    const oneHotVectorFloat32Array = oneHotVector.toFloat32Array(),
-          matrixFloat32Array = this.matrix.toFloat32Array(),
-          rows = this.matrix.getRows(),
-          columns = this.matrix.getColumns(),
-          probabilitiesFloat32Array = forward(oneHotVectorFloat32Array, matrixFloat32Array, rows, columns),
-          probabilitiesVector = ProbabilitiesVector.fromFloat32Array(probabilitiesFloat32Array);
+    const index = oneHotVector.getIndex(),
+          row = index, ///
+          vector = this.matrix.getVectorAtRow(Vector, row),
+          probabilitiesVector = ProbabilitiesVector.fromVector(vector);
 
     return probabilitiesVector;
   }
 
+  getCountAtRow(row) {
+    const index = row,  ///
+          element = this.vector.getElementAt(index),
+          count = element;  ///
+
+    return count;
+  }
+
+  setCountAtRow(row, count) {
+    const index = row,  ///
+          element = count;  ///
+
+    this.vector.setElementAt(index, element);
+  }
+
   initialise(size) {
+    this.vector.initialise(size);
     this.matrix.initialise(size);
   }
 
@@ -66,8 +95,9 @@ export default class Weights extends Element {
   }
 
   static fromProperties(properties, ...remainingArguments) {
-    const matrix = Matrix.fromNothing(),
-          weights = Element.fromProperties(Weights, properties, matrix, ...remainingArguments);
+    const vector = Vector.fromNothing(),
+          matrix = Matrix.fromNothing(),
+          weights = Element.fromProperties(Weights, properties, vector, matrix, ...remainingArguments);
 
     return weights;
   }

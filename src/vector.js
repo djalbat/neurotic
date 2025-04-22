@@ -8,8 +8,6 @@ import { softmaxVector,
          subtractVectorFromVector,
          outerMultiplyVectorByVector } from "../lib.node";
 
-import Matrix from "./matrix";
-
 import { DECIMAL_PLACES } from "./constants";
 
 export default class Vector {
@@ -36,10 +34,14 @@ export default class Vector {
     return resultVector;
   }
 
-  elementAt(index) {
+  getElementAt(index) {
     const element = this.elements[index];
 
     return element;
+  }
+
+  setElementAt(index, element) {
+    this.elements[index] = element;
   }
 
   addVector(vector) {
@@ -91,7 +93,7 @@ export default class Vector {
     return resultVector;
   }
 
-  outerMultiplyByVector(vector) {
+  outerMultiplyByVector(Matrix, vector) {
     const vectorA = this, ///
           vectorB = vector, ///
           vectorAFloat32Array = vectorA.toFloat32Array(),
@@ -104,6 +106,17 @@ export default class Vector {
           resultMatrix = Matrix.fromRowsColumnsAndFloat32Array(rows, columns, resultFloat32Array);
 
     return resultMatrix;
+  }
+
+  initialise(size) {
+    this.elements = [];
+
+    const element = 1,
+          cardinality = size; ///
+
+    for (let count = 0; count < cardinality; count++) {
+      this.elements.push(element);
+    }
   }
 
   asString() {
@@ -148,6 +161,13 @@ export default class Vector {
     const float32Array = new Float32Array(this.elements);
 
     return float32Array;
+  }
+
+  static fromNothing() {
+    const elements = null,
+          vector = new Vector(elements);
+
+    return vector;
   }
 
   static fromElements(elements) {

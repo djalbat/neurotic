@@ -32,8 +32,8 @@ export default class Vocabulary extends Element {
     return size;
   }
 
-  tokenAt(index) {
-    const token = this.tokens[index] || null;
+  getTokenAt(index) {
+    const token = this.tokens[index];
 
     return token;
   }

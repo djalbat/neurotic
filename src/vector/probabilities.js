@@ -4,9 +4,16 @@ import Vector from "../vector";
 
 import { random } from "../utilities/random";
 
-import { DEFAULT_CUTOFF, DEFAULT_THRESHOLD, DEFAULT_TEMPERATURE } from "../defaults";
+import { DEFAULT_CUTOFF, DEFAULT_THRESHOLD } from "../defaults";
 
 export default class ProbabilitiesVector extends Vector {
+  getLength() {
+    const width = this.getWidth(),
+          length = width; ///
+
+    return length;
+  }
+
   getProbabilities() {
     const elements = this.getElements(),
           probabilities = elements; ///
@@ -14,7 +21,7 @@ export default class ProbabilitiesVector extends Vector {
     return probabilities;
   }
 
-  probabilityAt(index) {
+  getProbabilityAt(index) {
     const probabilities = this.getProbabilities(),
           probability = probabilities[index];
 
@@ -38,22 +45,17 @@ export default class ProbabilitiesVector extends Vector {
     return argmax;
   }
 
-  sample(cutoff = DEFAULT_CUTOFF, temperature = DEFAULT_TEMPERATURE) {
-    const lowerBound  = 0,
-          upperBound = 1 - cutoff,
-          number = random(lowerBound, upperBound);
-
-    let probabilities;
-
-    probabilities = this.getProbabilities();
-
-    probabilities = sharpenProbabilities(probabilities, temperature);
-
-    const length = probabilities.length,
-          sortedIndexes = sortIndexes(probabilities);
+  sample(cutoff = DEFAULT_CUTOFF) {
+    const length = this.getLength(),
+        probabilities = this.getProbabilities(),
+        sortedIndexes = sortIndexes(probabilities);
 
     let sortedIndex,
         accumulatedProbability = 0;
+
+    const lowerBound  = 0,
+          upperBound = 1 - cutoff,
+          number = random(lowerBound, upperBound);
 
     for (let index = 0; index < length; index++) {
       sortedIndex = sortedIndexes[index];
@@ -116,10 +118,10 @@ export default class ProbabilitiesVector extends Vector {
     return maximumProbability;
   }
 
-  predictIndex(cutoff = DEFAULT_CUTOFF, threshold = DEFAULT_THRESHOLD, temperature = DEFAULT_TEMPERATURE) {
+  predictIndex(cutoff = DEFAULT_CUTOFF, threshold = DEFAULT_THRESHOLD) {
     const normalisedEntropy = this.normalisedEntropy(),
           index = (normalisedEntropy < threshold) ?
-                     this.sample(cutoff, temperature) :
+                     this.sample(cutoff) :
                        null;
 
     return index;
@@ -159,26 +161,4 @@ function sortIndexes(probabilities) {
   const sortedIndexes = indexes;  ///
 
   return sortedIndexes;
-}
-
-function sharpenProbabilities(probabilities, temperature) {
-  const power = 1 / temperature,
-        transformedProbabilities = probabilities.map((probability) => {
-          const transformedProbability = Math.pow(probability, power);
-
-          return transformedProbability;
-        }),
-        totalTransformedProbabilities = transformedProbabilities.reduce((totalTransformedProbabilities, probability) => {
-          totalTransformedProbabilities = totalTransformedProbabilities + probability;
-
-          return totalTransformedProbabilities;
-        }, 0);
-
-  probabilities = transformedProbabilities.map(transformedProbability => {
-    const probability = (transformedProbability / totalTransformedProbabilities);
-
-    return probability;
-  });
-
-  return probabilities;
 }

@@ -2,6 +2,8 @@
 
 import OneHotVector from "./vector/oneHot";
 
+import { first, second } from "./utilities/array";
+
 export default class Pair {
   constructor(tokens) {
     this.tokens = tokens;
@@ -11,14 +13,20 @@ export default class Pair {
     return this.tokens;
   }
 
-  asOneHotVectors(vocabulary) {
-    const oneHotVectors = this.tokens.map((token) => {
-      const oneHotVector = OneHotVector.fromTokenAndVocabulary(token, vocabulary);
+  inputOneHotVector(vocabulary) {
+    const firstToken = first(this.tokens),
+          inputToken = firstToken,  ///
+          inputOneHotVector = OneHotVector.fromTokenAndVocabulary(inputToken, vocabulary);
 
-      return oneHotVector;
-    });
+    return inputOneHotVector;
+  }
 
-    return oneHotVectors;
+  outputOneHotVector(vocabulary) {
+    const secondToken = second(this.tokens),
+          outputToken = secondToken,  ///
+          outputOneHotVector = OneHotVector.fromTokenAndVocabulary(outputToken, vocabulary);
+
+    return outputOneHotVector;
   }
 
   static fromTokens(tokens) {

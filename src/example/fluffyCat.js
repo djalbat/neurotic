@@ -5,40 +5,40 @@ import { Model, Corpus, Weights, Vocabulary } from "../index";  ///
 export default function fluffyCatExampleI() {
   let tokens;
 
+  // const corpus = Corpus.fromJSON([
+  //   ["Fluffy", "Cat"],
+  //   ["Smelly", "Dog"],
+  //   ["Fluffy", "Cat", "Purrs"],
+  //   ["Smelly", "Dog", "Barks"],
+  //   ["Dog", "Chases", "Cat"],
+  //   ["Cat", "Scratches", "Dog"]
+  // ]);
+
   const corpus = Corpus.fromJSON([
-    ["Fluffy", "Cat"],
-    ["Smelly", "Dog"],
-    ["Fluffy", "Cat", "Purrs"],
-    ["Smelly", "Dog", "Barks"],
-    ["Dog", "Chases", "Cat"],
-    ["Cat", "Scratches", "Dog"]
+    ["Cats", "Meow"]
   ]);
 
   tokens = corpus.asTokens();
 
   const model =
 
-          <Model>
-            <Vocabulary tokens={tokens} />
-            <Weights/>
-          </Model>
+    <Model>
+      <Vocabulary tokens={tokens} />
+      <Weights/>
+    </Model>
 
-        ,
-        batch = false,
-        epochs = 10,
-        learningRate = 0.5;
+  ;
 
-  model.train(corpus, batch, epochs, learningRate);
+  model.train(corpus);
 
-  const token = "Cat",
+  console.log(model.weights.matrix.asString())
+
+  const token = "Cats",
         length = 2,
-        cutoff = 0.03,
-        threshold = 3/4,
-        temperature = 1/2;
+        cutoff = 1/3,
+        threshold = 1;
 
-  for (let count = 0; count < 100; count++) {
-    tokens = model.infer(token, length, cutoff, threshold, temperature);
+  tokens = model.infer(token, length, cutoff, threshold);
 
-    console.log(JSON.stringify(tokens));
-  }
+  console.log(JSON.stringify(tokens));
 }

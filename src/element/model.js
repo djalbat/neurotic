@@ -1,6 +1,6 @@
 "use strict";
 
-import { arrayUtilities, fileSystemUtilities } from "necessary";
+import { fileSystemUtilities } from "necessary";
 
 import Matrix from "../matrix";
 import Weights from "./weights";
@@ -8,18 +8,14 @@ import Element from "../element";
 import Vocabulary from "./vocabulary";
 import OneHotVector from "../vector/oneHot";
 
+import { first } from "../utilities/array";
 import { elementFromChildElements } from "../utilities/element";
 import { weightsFromJSON, vocabularyFromJSON } from "../utilities/json";
-import { DEFAULT_BATCH,
-         DEFAULT_EPOCHS,
-         DEFAULT_CUTOFF,
+import { DEFAULT_CUTOFF,
          DEFAULT_THRESHOLD,
-         DEFAULT_TEMPERATURE,
-         DEFAULT_LEARNING_RATE,
          DEFAULT_MODEL_FILE_PATH } from "../defaults";
 
-const { first } = arrayUtilities,
-      { writeFile } = fileSystemUtilities;
+const { writeFile } = fileSystemUtilities;
 
 export default class Model extends Element {
   constructor(properties, childElements, vocabulary, weights) {
@@ -37,50 +33,19 @@ export default class Model extends Element {
     return this.weights;
   }
 
-  step(corpus, batch = DEFAULT_BATCH, learningRate = DEFAULT_LEARNING_RATE) {
-    const deltaMatrices = [];
-
+  train(corpus) {
     corpus.forEachChunk((chunk) => {
       chunk.forEachPair((pair) => {
-        const oneHotVectors = pair.asOneHotVectors(this.vocabulary),
-              [ inputOneHotVector, outputOneHotVector ] = oneHotVectors,
-              deltaMatrix = this.weights.prepare(inputOneHotVector, outputOneHotVector, learningRate);
-
-        if (batch) {
-          deltaMatrices.push(deltaMatrix);
-
-          return;
-        }
-
-        const scaledDeltaMatrix = deltaMatrix.multiplyByScalar(learningRate);
-
-        this.weights.update(scaledDeltaMatrix);
+        this.weights.train(pair, this.vocabulary);
       });
     });
-
-    if (batch) {
-      const meanDeltaMatrix = meanOfMatrices(deltaMatrices),
-            scaledMeanDeltaMatrix = meanDeltaMatrix.multiplyByScalar(learningRate);
-
-      this.weights.update(scaledMeanDeltaMatrix);
-    }
   }
 
-  train(corpus, batch = DEFAULT_BATCH, epochs = DEFAULT_EPOCHS, learningRate = DEFAULT_LEARNING_RATE) {
-    const results = []
-
-    for (let count = 0; count < epochs; count++) {
-      this.step(corpus, batch, learningRate);
-    }
-
-    return results;
-  }
-
-  infer(token, length, cutoff = DEFAULT_CUTOFF, threshold = DEFAULT_THRESHOLD, temperature = DEFAULT_TEMPERATURE) {
+  infer(token, length, cutoff = DEFAULT_CUTOFF, threshold = DEFAULT_THRESHOLD) {
     const tokens = [];
 
     for (let count = 0; count < length; count++) {
-      token = this.forward(token, cutoff, threshold, temperature);
+      token = this.forward(token, cutoff, threshold);
 
       if (token === null) {
         break;
@@ -92,13 +57,13 @@ export default class Model extends Element {
     return tokens;
   }
 
-  forward(token, cutoff = DEFAULT_CUTOFF, threshold = DEFAULT_THRESHOLD, temperature = DEFAULT_TEMPERATURE) {
+  forward(token, cutoff = DEFAULT_CUTOFF, threshold = DEFAULT_THRESHOLD) {
     const oneHotVector = OneHotVector.fromTokenAndVocabulary(token, this.vocabulary),
           probabilitiesVector = this.weights.forward(oneHotVector),
-          index = probabilitiesVector.predictIndex(cutoff, threshold, temperature);
+          index = probabilitiesVector.predictIndex(cutoff, threshold);
 
     token = (index !== null) ?
-              this.vocabulary.tokenAt(index) :
+              this.vocabulary.getTokenAt(index) :
                 null;
 
     return token;

@@ -26,6 +26,23 @@ export default class Matrix {
     return this.elements;
   }
 
+  getVectorAtRow(Vector, row) {
+    const start = row * this.columns,
+          end = start + this.columns,
+          elements = this.elements.slice(start, end),
+          vector = Vector.fromElements(elements);
+
+    return vector;
+  }
+
+  setVectorAtRow(row, vector) {
+    const start = row * this.columns,
+          deleteCount = this.columns,
+          elements = vector.getElements();
+
+    this.elements.splice(start, deleteCount, ...elements);
+  }
+
   addMatrix(matrix) {
     const matrixA = matrix, ///
           matrixB = this, ///
