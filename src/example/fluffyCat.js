@@ -1,43 +1,42 @@
 "use strict";
 
-import { Model, Corpus, Weights, Vocabulary } from "../index";  ///
+import { Model, Corpus, Vocabulary, AttentionHead } from "../index";  ///
 
 export default function fluffyCatExampleI() {
-  let tokens;
-
-  const corpus = Corpus.fromJSON([
-    ["Fluffy", "Cat"],
-    ["Smelly", "Dog"],
-    ["Fluffy", "Cat", "Purrs"],
-    ["Smelly", "Dog", "Barks"],
-    ["Dog", "Chases", "Cat"],
-    ["Cat", "Scratches", "Dog"]
-  ]);
-
   // const corpus = Corpus.fromJSON([
-  //   ["Cats", "Meow"]
+  //   ["Fluffy", "Cat"],
+  //   ["Smelly", "Dog"],
+  //   ["Fluffy", "Cat", "Purrs"],
+  //   ["Smelly", "Dog", "Barks"],
+  //   ["Dog", "Chases", "Cat"],
+  //   ["Cat", "Scratches", "Dog"]
   // ]);
 
-  tokens = corpus.asTokens();
+  const corpus = Corpus.fromJSON([
+    ["Eek", "Meow"],
+    ["Bark", "Hungry"],
+    ["Meow", "Hungry"]
+  ]);
 
-  const model =
+  const tokens = corpus.asTokens(),
+        model =
 
-    <Model>
-      <Vocabulary tokens={tokens} />
-      <Weights/>
-    </Model>
+          <Model>
+            <Vocabulary tokens={tokens} />
+            <AttentionHead/>
+          </Model>
 
-  ;
+        ;
 
   model.train(corpus);
 
   // console.log(model.weights.matrix.asString())
 
-  const token = "Fluffy",
-        length = 10;
+  const token = "Eek",
+        length = 100;
 
   for (let count = 0; count < 50; count++) {
-    tokens = model.infer(token, length);
+    const tokens = model.infer(token, length);
 
     console.log(JSON.stringify(tokens));
   }

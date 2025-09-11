@@ -1,61 +1,39 @@
 "use strict";
 
-import Vector from "../vector";
-import Matrix from "../matrix";
 import Element from "../element";
-import ProbabilityVector from "../vector/probability";
-
-import { matrixFromJSON } from "../utilities/json";
+import FrequencyVector from "../vector/frequency";
 
 export default class Weights extends Element {
-  constructor(properties, childElements, vector, matrix) {
-    super(properties, childElements);
+  constructor(frequencyVectors) {
+    super();
 
-    this.vector = vector;
-    this.matrix = matrix;
+    this.frequencyVectors = frequencyVectors;
   }
 
-  getVector() {
-    return this.vector;
+  getFrequencyVectors() {
+    return this.frequencyVectors;
   }
 
-  getMatrix() {
-    return this.matrix;
+  getFrequencyVectorAtRow(row) {
+    const index = row,  ///
+          frequencyVector = this.frequencyVectors[index];
+
+    return frequencyVector;
   }
 
-  train(transition, vocabulary) {
-    const inputOneHotVector = transition.inputOneHotVector(vocabulary),
-          outputOneHotVector = transition.outputOneHotVector(vocabulary),
-          index = inputOneHotVector.getIndex(),
-          row = index; ///
+  train(transition) {
+    const row = transition.getRow(),
+          column = transition.getColumn(),
+          frequencyVector = this.getFrequencyVectorAtRow(row);
 
-    let count,
-        vector;
-
-    count = this.getCountAtRow(row);
-
-    vector = this.matrix.getVectorAtRow(Vector, row);
-
-    const weightedVector = vector.multiplyByScalar(count),
-          augmentedWeightsVector = weightedVector.addVector(outputOneHotVector);
-
-    count++;
-
-    vector = augmentedWeightsVector.divideByScalar(count);
-
-    this.setCountAtRow(row, count);
-
-    this.matrix.setVectorAtRow(row, vector);
+    frequencyVector.train(column);
   }
 
-  forward(oneHotVector) {
-    const index = oneHotVector.getIndex(),
-          row = index, ///
-          count = this.getCountAtRow(row),
-          vector = this.matrix.getVectorAtRow(Vector, row),
-          probabilityVector = ProbabilityVector.fromVectorAndCount(vector, count);
+  forward(row) {
+    const frequencyVector = this.getFrequencyVectorAtRow(row),
+          column = frequencyVector.predict();
 
-    return probabilityVector;
+    return column;
   }
 
   getCountAtRow(row) {
@@ -74,8 +52,13 @@ export default class Weights extends Element {
   }
 
   initialise(size) {
-    this.vector.initialise(size);
-    this.matrix.initialise(size);
+    this.frequencyVectors = [];
+
+    for (let index = 0; index < size; index++) {
+      const frequencyVector = FrequencyVector.fromSize(size);
+
+      this.frequencyVectors.push(frequencyVector);
+    }
   }
 
   toJSON() {
@@ -89,16 +72,23 @@ export default class Weights extends Element {
   }
 
   static fromJJSON(json) {
-    const matrix = matrixFromJSON(json),
-          weights = new Weights(matrix);
+    const frequencyVectors = frequencyVectorsFromJSON(json),
+          weights = new Weights(frequencyVectors);
+
+    return weights;
+  }
+
+  static fromNothing() {
+    const properties = {},
+          frequencyVectors = null,
+          weights = Element.fromProperties(Weights, properties, frequencyVectors);
 
     return weights;
   }
 
   static fromProperties(properties, ...remainingArguments) {
-    const vector = Vector.fromNothing(),
-          matrix = Matrix.fromNothing(),
-          weights = Element.fromProperties(Weights, properties, vector, matrix, ...remainingArguments);
+    const frequencyVectors = null,
+          weights = Element.fromProperties(Weights, properties, frequencyVectors, ...remainingArguments);
 
     return weights;
   }

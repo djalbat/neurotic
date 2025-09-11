@@ -2,39 +2,36 @@
 
 import { fileSystemUtilities } from "necessary";
 
-import Matrix from "../matrix";
-import Weights from "./weights";
+import Head from "../element/head";
 import Element from "../element";
 import Vocabulary from "./vocabulary";
-import OneHotVector from "../vector/oneHot";
 
-import { first } from "../utilities/array";
 import { DEFAULT_MODEL_FILE_PATH } from "../defaults";
 import { elementFromChildElements } from "../utilities/element";
-import { weightsFromJSON, vocabularyFromJSON } from "../utilities/json";
+import { headFromJSON, vocabularyFromJSON } from "../utilities/json";
 
 const { writeFile } = fileSystemUtilities;
 
 export default class Model extends Element {
-  constructor(properties, childElements, vocabulary, weights) {
-    super(properties, childElements);
+  constructor(vocabulary, head) {
+    super();
 
     this.vocabulary = vocabulary;
-    this.weights = weights;
+    this.head = head;
   }
 
   getVocabulary() {
     return this.vocabulary;
   }
 
-  getWeights() {
-    return this.weights;
+  getHead() {
+    return this.head;
   }
 
   train(corpus) {
     corpus.forEachChunk((chunk) => {
-      chunk.forEachTransition((transition) => {
-        this.weights.train(transition, this.vocabulary);
+      chunk.forEachTransition(this.vocabulary, (transition) => {
+        this.head.train(transition);
       });
     });
   }
@@ -55,17 +52,7 @@ export default class Model extends Element {
     return tokens;
   }
 
-  forward(token) {
-    const oneHotVector = OneHotVector.fromTokenAndVocabulary(token, this.vocabulary),
-          probabilityVector = this.weights.forward(oneHotVector),
-          index = probabilityVector.predictIndex();
-
-    token = (index !== null) ?
-              this.vocabulary.getTokenAt(index) :
-                null;
-
-    return token;
-  }
+  forward(token) { return this.head.forward(token, this.vocabulary); }
 
   serialise(filePath = DEFAULT_MODEL_FILE_PATH) {
     const json = this.toJSON(),
@@ -78,19 +65,17 @@ export default class Model extends Element {
   initialise() {
     this.vocabulary.initialise();
     
-    const size = this.vocabulary.getSize();
-
-    this.weights.initialise(size);
+    this.head.initialise(this.vocabulary);
   }
 
   toJSON() {
     const vocabularyJSON = this.vocabulary.toJSON(),
-          weightsJSON = this.weights.toJSON(),
+          headJSON = this.head.toJSON(),
           vocabulary = vocabularyJSON,  ///
-          weights = weightsJSON, ///
+          head = headJSON, ///
           json = {
             vocabulary,
-            weights
+            head
           };
 
     return json;
@@ -98,8 +83,8 @@ export default class Model extends Element {
 
   static fromJSON(json) {
     const vocabulary = vocabularyFromJSON(json),
-          weights = weightsFromJSON(json),
-          model = new MOdel(vocabulary, weights);
+          head = headFromJSON(json),
+          model = new MOdel(vocabulary, head);
 
     return model;
   }
@@ -107,8 +92,8 @@ export default class Model extends Element {
   static fromProperties(properties, ...remainingArguments) {
     const { childElements } = properties,
           vocabulary = elementFromChildElements(childElements, Vocabulary),
-          weights = elementFromChildElements(childElements, Weights),
-          model = Element.fromProperties(Model, properties, vocabulary, weights, ...remainingArguments);
+          head = elementFromChildElements(childElements, Head),
+          model = Element.fromProperties(Model, properties, vocabulary, head, ...remainingArguments);
 
     model.initialise();
 

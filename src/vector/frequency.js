@@ -3,17 +3,17 @@
 import Vector from "../vector";
 
 import { random } from "../utilities/random";
+import { elementsAsElementsString } from "../vector";
 
 export default class FrequencyVector extends Vector {
-  isEmpty() {
-    const frequencies = this.getFrequencies(),
-          empty = frequencies.every((frequency) => {
-            if (frequency === 0) {
-              return true;
-            }
-          });
+  constructor(elements, count) {
+    super(elements);
 
-    return empty;
+    this.count = count;
+  }
+
+  getCount() {
+    return this.count;
   }
 
   getLength() {
@@ -30,6 +30,19 @@ export default class FrequencyVector extends Vector {
     return frequencies;
   }
 
+  getFrequencyAt(index) {
+    const element = this.getElementAt(index),
+          frequency = element;  ///
+
+    return frequency;
+  }
+
+  setFrequencyAt(index, frequency) {
+    const element = frequency;  ///
+
+    this.setElementAt(index, element);
+  }
+
   getTotalFrequency() {
     const frequencies = this.getFrequencies(),
           totalFrequency = frequencies.reduce((totalFrequency, frequency) => {
@@ -39,6 +52,24 @@ export default class FrequencyVector extends Vector {
           }, 0);
 
     return totalFrequency;
+  }
+
+  isEmpty() {
+    const empty = (this.count === 1);
+
+    return empty;
+  }
+
+  train(row) {
+    const index = row;  ///
+
+    let frequency = this.getFrequencyAt(index);
+
+    frequency++;
+
+    this.count++;
+
+    this.setFrequencyAt(index, frequency);
   }
 
   sample() {
@@ -65,45 +96,57 @@ export default class FrequencyVector extends Vector {
     return index;
   }
 
-  predictIndex() {
-    let index = null;
+  predict() {
+    let column = null;
 
     const empty = this.isEmpty();
 
     if (!empty) {
-      index = this.sample();
+      const index = this.sample();
+
+      column = index; ///
     }
 
-    return index;
+    return column;
   }
 
-  static fromProbabilityVector(probabilityVector) {
-    const count = probabilityVector.getCount(),
-          length = probabilityVector.getLength(),
-          intermediateVector = probabilityVector.multiplyByScalar(count),
-          element = 1 / length,
-          width = length, ///
-          initialVector = Vector.fromWidthAndElement(width, element),
-          vector = intermediateVector.subtractVector(initialVector);
+  asString() {
+    const elements = this.getElements(),
+          elementsString = elementsAsElementsString(elements),
+          string = `[ ${this.count}: ${elementsString} ]`;
 
-    let elements;
+    return string;
+  }
 
-    elements = vector.getElements();
+  toJSON() {
+    const elements = this.getElements(),
+          count = this.count,
+          json = {
+            elements,
+            count
+          };
 
-    elements = roundElements(elements); ///
+    return json;
+  }
 
-    const frequencyVector = new FrequencyVector(elements);
+  static fromSize(size) {
+    const count = 1,
+          element = 0,
+          elements = [];
+
+    for (let index = 0; index < size; index++) {
+      elements.push(element);
+    }
+
+    const frequencyVector = new FrequencyVector(elements, count);
 
     return frequencyVector;
   }
-}
 
-function roundElements(elements) {
-  elements = elements.map((element) => {  ///
-    element = Math.round(element);
+  static fromJSON(json) {
+    const { elements, count } = json,
+          frequencyVector = new FrequencyVector(elements, count);
 
-    return element;
-  });
-
-  return elements;
+    return frequencyVector;
+  }
 }

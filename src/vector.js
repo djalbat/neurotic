@@ -1,7 +1,6 @@
 "use strict";
 
-import { softmaxVector,
-         addVectorToVector,
+import { addVectorToVector,
          divideVectorByScalar,
          multiplyVectorByScalar,
          multiplyVectorByMatrix,
@@ -24,14 +23,6 @@ export default class Vector {
           width = elementsLength; ///
 
     return width;
-  }
-
-  softmax() {
-    const vectorFloat32Array = this.toFloat32Array(),
-          resultFloat32Array = softmaxVector(vectorFloat32Array),
-          resultVector = Vector.fromFloat32Array(resultFloat32Array);
-
-    return resultVector;
   }
 
   getElementAt(index) {
@@ -124,30 +115,8 @@ export default class Vector {
   }
 
   asString() {
-    let string = "";
-
-    string += "[ ";
-
-    const width = this.getWidth(),
-          lastIndex = width - 1;
-
-    for (let index = 0; index < width; index++) {
-      const element = this.elements[index],
-            number = Number(element),
-            roundedNumber = number.toFixed(DECIMAL_PLACES);
-
-      if (roundedNumber >= 0) {
-        string += "+";
-      }
-
-      string += roundedNumber;
-
-      if (index < lastIndex) {
-        string += ", ";
-      }
-    }
-
-    string += " ]";
+    const elementsString = elementsAsElementsString(this.elements),
+          string = `[ ${elementsString} ]`;
 
     return string;
   }
@@ -198,4 +167,29 @@ export default class Vector {
 
     return vector;
   }
+}
+
+export function elementsAsElementsString(elements) {
+  let elementsString = "";
+
+  const length = elements.length,
+        lastIndex = length - 1;
+
+  for (let index = 0; index < length; index++) {
+    const element = elements[index],
+          number = Number(element),
+          roundedNumber = number.toFixed(DECIMAL_PLACES);
+
+    if (roundedNumber >= 0) {
+      elementsString += "+";
+    }
+
+    elementsString += roundedNumber;
+
+    if (index < lastIndex) {
+      elementsString += ", ";
+    }
+  }
+
+  return elementsString;
 }

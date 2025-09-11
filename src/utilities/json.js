@@ -4,6 +4,22 @@ import Chunk from "../chunk";
 import Matrix from "../matrix";
 import Weights from "../element/weights";
 import Vocabulary from "../element/vocabulary";
+import MarkovHead from "../element/head/markov";
+import AttentionHead from "../element/head/attention";
+import FrequencyVector from "../vector/frequency";
+
+export function headFromJSON(json) {
+  let head;
+
+  ({head} = json);
+
+  json = head;  ///
+
+  head = MarkovHead.fromJSON(json)
+      || AttentionHead.fromJSON(json);
+
+  return head;
+}
 
 export function matrixFromJSON(json) {
   let matrix;
@@ -41,6 +57,59 @@ export function weightsFromJSON(json) {
   return weights;
 }
 
+export function qWeightsFromJSON(json) {
+  let qWeights;
+
+  ({ qWeights } = json);
+
+  json = qWeights;  ///
+
+  qWeights = Weights.fromJSON(json);
+
+  return qWeights;
+}
+
+export function kWeightsFromJSON(json) {
+  let kWeights;
+
+  ({ kWeights } = json);
+
+  json = kWeights;  ///
+
+  kWeights = Weights.fromJSON(json);
+
+  return kWeights;
+}
+
+export function vWeightsFromJSON(json) {
+  let vWeights;
+
+  ({ vWeights } = json);
+
+  json = vWeights;  ///
+
+  vWeights = Weights.fromJSON(json);
+
+  return vWeights;
+}
+
+export function frequencyVectorsFromJSON(json) {
+  let frequencyVectors;
+
+  ({ frequencyVectors } = json);
+
+  const frequencyVectorsJSON = frequencyVectors;  ///
+
+  frequencyVectors = frequencyVectorsJSON.map((frequencyVectorJSON) => {
+    const json = frequencyVectorJSON, ///
+          frequencyVector = FrequencyVector.fromJSON(json);
+
+    return frequencyVector;
+  });
+
+  return frequencyVectors;
+}
+
 export function vocabularyFromJSON(json) {
   let vocabulary;
 
@@ -63,3 +132,12 @@ export function chunksToChunksJSON(chunks) {
   return chunksJSON;
 }
 
+export function frequencyVectorsToFrequencyVectorsJSON(frequencyVectors) {
+  const frequencyVectorsJSON = frequencyVectors.map((frequencyVector) => {
+    const frequencyVectorJSON = frequencyVector.toJSON();
+
+    return frequencyVectorJSON;
+  });
+
+  return frequencyVectorsJSON;
+}

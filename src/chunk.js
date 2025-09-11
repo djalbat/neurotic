@@ -13,7 +13,7 @@ export default class Chunk {
 
   forEachToken(callback) { this.tokens.forEach(callback); }
 
-  forEachTransition(callback) {
+  forEachTransition(vocabulary, callback) {
     const tokensLength = this.tokens.length,
           transitionsLength = tokensLength - 1;
 
@@ -21,7 +21,7 @@ export default class Chunk {
       const start = index,  ///
             end = index + 2,
             tokens = this.tokens.slice(start, end),
-            transition = Transition.fromTokens(tokens);
+            transition = Transition.fromTokensAndVocabulary(tokens, vocabulary);
 
       callback(transition);
     }

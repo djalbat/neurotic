@@ -10,8 +10,8 @@ import { DEFAULT_VOCABULARY_TOKENS, DEFAULT_VOCABULARY_FILE_PATH } from "../defa
 const { readFile } = fileSystemUtilities;
 
 export default class Vocabulary extends Element {
-  constructor(properties, childElements, tokens, filePath) {
-    super(properties, childElements);
+  constructor(tokens, filePath) {
+    super();
 
     this.tokens = tokens;
     this.filePath = filePath;

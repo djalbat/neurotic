@@ -1,36 +1,30 @@
 "use strict";
 
-import OneHotVector from "./vector/oneHot";
-
 import { first, second } from "./utilities/array";
 
 export default class Transition {
-  constructor(tokens) {
-    this.tokens = tokens;
+  constructor(row, column) {
+    this.row = row;
+    this.column = column;
   }
 
-  getTokens() {
-    return this.tokens;
+  getRow() {
+    return this.row;
   }
 
-  inputOneHotVector(vocabulary) {
-    const firstToken = first(this.tokens),
-          inputToken = firstToken,  ///
-          inputOneHotVector = OneHotVector.fromTokenAndVocabulary(inputToken, vocabulary);
-
-    return inputOneHotVector;
+  getColumn() {
+    return this.column;
   }
 
-  outputOneHotVector(vocabulary) {
-    const secondToken = second(this.tokens),
-          outputToken = secondToken,  ///
-          outputOneHotVector = OneHotVector.fromTokenAndVocabulary(outputToken, vocabulary);
+  static fromTokensAndVocabulary(tokens, vocabulary) {
+    const firstToken = first(tokens),
+          secondToken = second(tokens);
 
-    return outputOneHotVector;
-  }
+    tokens = vocabulary.getTokens();
 
-  static fromTokens(tokens) {
-    const transition = new Transition(tokens);
+    const row = tokens.indexOf(firstToken),
+          column = tokens.indexOf(secondToken),
+          transition = new Transition(row, column);
 
     return transition;
   }
