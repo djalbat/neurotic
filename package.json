@@ -1,7 +1,7 @@
 {
   "name": "neurotic",
   "author": "James Smith",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "license": "MIT, Anti-996",
   "homepage": "https://github.com/djalbat/neurotic",
   "description": "A JavaScript neural network.",
@@ -15,7 +15,7 @@
   "devDependencies": {
     "@swc/core": "^1.5.6",
     "lively-cli": "^2.0.77",
-    "watchful-cli": "^1.7.63"
+    "watchful-cli": "^1.7.67"
   },
   "scripts": {
     "clean": "rm -rf ./lib",
