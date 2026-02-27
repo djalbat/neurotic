@@ -1,7 +1,7 @@
 {
   "name": "neurotic",
   "author": "James Smith",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "license": "MIT, Anti-996",
   "homepage": "https://github.com/djalbat/neurotic",
   "description": "A JavaScript neural network.",
@@ -36,5 +36,9 @@
     "native-build": "npm run native-clean && npm run native-cargo-build && npm run native-copy",
     "native-build-debug": "npm run native-clean && npm run native-cargo-build-debug && npm run native-copy-debug"
   },
+  "files": [
+    "src",
+    "lib"
+  ],
   "main": "./lib/index.js"
 }
