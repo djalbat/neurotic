@@ -4,6 +4,8 @@ node_modules
 npm-debug.log
 package-lock.json
 
-target
-Cargo.lock
-index.d.ts
+.git
+.swcrc
+.gitignore
+lib
+license.txt
